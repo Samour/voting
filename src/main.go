@@ -7,10 +7,6 @@ import (
 	"net/http"
 )
 
-const CACHE_TEMPLATES = true
-
-var count = 0
-
 var templates = template.Must(template.ParseFiles(
 	"resources/components/page_footer.html",
 	"resources/components/page_header.html",
@@ -30,7 +26,7 @@ func main() {
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	err := renderTemplate(w, "home.html", count)
+	err := templates.ExecuteTemplate(w, "home.html", nil)
 	if err != nil {
 		serveErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,21 +34,9 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveNewPoll(w http.ResponseWriter, r *http.Request) {
-	err := renderTemplate(w, "new_poll.html", nil)
+	err := templates.ExecuteTemplate(w, "new_poll.html", nil)
 	if err != nil {
 		serveErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func renderTemplate(w http.ResponseWriter, t string, data any) error {
-	if CACHE_TEMPLATES {
-		return templates.ExecuteTemplate(w, t, data)
-	} else {
-		tmpl, err := template.ParseFiles("resources/pages/" + t)
-		if err != nil {
-			return err
-		}
-		return tmpl.Execute(w, data)
 	}
 }
 
