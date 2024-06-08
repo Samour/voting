@@ -14,6 +14,7 @@ func main() {
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 	http.HandleFunc("GET /{$}", home.ServeHome)
 	http.HandleFunc("GET /polls/new", polls.ServeNewPoll)
+	http.HandleFunc("GET /polls/{id}/edit", polls.ServeEditPoll)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
