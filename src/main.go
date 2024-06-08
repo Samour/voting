@@ -7,7 +7,11 @@ import (
 	"net/http"
 )
 
+const CACHE_TEMPLATES = false
+
 var count = 0
+
+var templates = template.Must(template.ParseFiles("resources/pages/home.html"))
 
 func main() {
 	http.HandleFunc("/increment", handleIncrement)
@@ -23,14 +27,22 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := template.ParseFiles("resources/pages/home.html")
+	err := renderTemplate(w, "home.html", count)
 	if err != nil {
 		serveErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = t.Execute(w, count)
-	if err != nil {
-		serveErrorPage(w, err.Error(), http.StatusInternalServerError)
+}
+
+func renderTemplate(w http.ResponseWriter, t string, data any) error {
+	if CACHE_TEMPLATES {
+		return templates.ExecuteTemplate(w, t, data)
+	} else {
+		tmpl, err := template.ParseFiles("resources/pages/" + t)
+		if err != nil {
+			return err
+		}
+		return tmpl.Execute(w, data)
 	}
 }
 
