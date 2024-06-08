@@ -1,6 +1,12 @@
 # Running locally
 
-`go` command must be run from inside `src` folder
+First, start dynamodb
+
+```
+docker compose up
+```
+
+Then build & run the application
 
 ```
 cd src
