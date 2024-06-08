@@ -1,5 +1,8 @@
 # Running locally
 
+`go` command must be run from inside `src` folder
+
 ```
-go run ./src/main.go
+cd src
+go run main.go
 ```
