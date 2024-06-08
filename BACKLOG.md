@@ -1,6 +1,5 @@
 # Backlog
 
-- Run golang "hello world"
 - Serve "hello world" page from golang BE
 - Serve simple counter page using HTMX
 - Create a poll
