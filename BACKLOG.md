@@ -1,6 +1,7 @@
 # Backlog
 
 - Create a poll
+- View polls
 - Cast a vote on poll (single vote)
 - Close a poll
 - Display poll results
@@ -20,4 +21,5 @@
 - Deploy website to internet (devprod)
 - Set up local docker dev env
 - Run tests on push (if any tests are written)
+- Sign up via OAuth
 - View poll results in real-time (websocket)

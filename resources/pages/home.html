@@ -1,19 +1,5 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <script src="https://unpkg.com/htmx.org@1.9.12"
-    integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
-    crossorigin="anonymous"></script>
-  <title>Voting App</title>
-</head>
-
-<body>
-  <h1>Hello World!</h1>
-  <p>
-    Current count: <span id="current-count">{{ . }}</span>
-  </p>
-  <button hx-post="/increment" hx-target="#current-count">Increment</button>
-</body>
-
-</html>
+{{ template "page_header.html" }}
+<div>
+  <a href="/polls/new">Create poll</a>
+</div>
+{{ template "page_footer.html" }}
