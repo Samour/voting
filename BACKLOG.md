@@ -1,6 +1,5 @@
 # Backlog
 
-- Serve simple counter page using HTMX
 - Create a poll
 - Cast a vote on poll (single vote)
 - Close a poll
