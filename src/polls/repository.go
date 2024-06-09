@@ -13,12 +13,12 @@ var tableName = "polls"
 
 func insertNewPollItem(p *Poll) error {
 	client := clients.DynamoDb()
-	condition := "attribute_not_exists(PollId)"
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {
 		return err
 	}
 
+	condition := "attribute_not_exists(PollId)"
 	_, err = client.PutItem(context.Background(), &dynamodb.PutItemInput{
 		TableName:           &tableName,
 		Item:                item,
@@ -60,12 +60,12 @@ func getPollItem(id string) (*Poll, error) {
 
 func updatePollItem(p *Poll) error {
 	client := clients.DynamoDb()
-	condition := "attribute_exists(PollId)"
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {
 		return err
 	}
 
+	condition := "attribute_exists(PollId)"
 	_, err = client.PutItem(context.Background(), &dynamodb.PutItemInput{
 		TableName:           &tableName,
 		Item:                item,
