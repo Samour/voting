@@ -5,10 +5,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Samour/voting/clients"
 	"github.com/Samour/voting/controllers"
 )
 
 func main() {
+	clients.WarmDynamoDbClient()
+
 	static := http.FileServer(http.Dir("resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 	http.HandleFunc("GET /{$}", controllers.ServeHome)

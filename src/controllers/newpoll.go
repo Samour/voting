@@ -8,8 +8,12 @@ import (
 )
 
 func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
-	id := polls.CreatePoll()
+	id, err := polls.CreatePoll()
+	if err != nil {
+		ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	redirect := fmt.Sprintf("/polls/%s/edit", id)
+	redirect := fmt.Sprintf("/polls/%s/edit", *id)
 	http.Redirect(w, r, redirect, http.StatusFound)
 }

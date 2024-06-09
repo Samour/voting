@@ -1,0 +1,23 @@
+{
+  "TableName": "polls",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "PollId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Discriminator",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "PollId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Discriminator",
+      "KeyType": "RANGE"
+    }
+  ]
+}
