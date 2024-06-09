@@ -2,12 +2,34 @@
 <h1>New Poll</h1>
 <div>
   <form>
-    <label for="poll-name">Name</label>
-    <input id="poll-name" />
-    <label for="option-1">1.</label>
-    <input id="option-1" />
-    <button>X</button>
-    <button>Add option</button>
+    <div class="row">
+      <label for="poll-name">Name</label>
+    </div>
+    <div class="row">
+      <div class="six columns">
+        <input id="poll-name" class="u-full-width" value="{{ .Name }}" />
+      </div>
+    </div>
+    <h3>Poll Options</h3>
+    {{ range .Options }}
+    <div class="row">
+      <div class="one column">
+        <label for="option-1">1.</label>
+      </div>
+      <div class="ten columns">
+        <input id="option-1" class="u-full-width" />
+      </div>
+      <div class="one column">
+        <button>X</button>
+      </div>
+    </div>
+    {{ end }}
+    <div class="row">
+      <button>Add option</button>
+    </div>
+    <div class="row">
+      <button>Save</button>
+    </div>
   </form>
 </div>
 {{ template "page_footer.html" }}
