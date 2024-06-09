@@ -17,6 +17,7 @@ var tmplFunctions = template.FuncMap{
 
 func parseFiles() (*template.Template, error) {
 	return template.New("home.html").Funcs(tmplFunctions).ParseFiles(
+		"../resources/components/edit_poll_options.html",
 		"../resources/components/page_footer.html",
 		"../resources/components/page_header.html",
 

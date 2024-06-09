@@ -1,0 +1,14 @@
+{{ range $i, $_ := .Options }}
+{{ $index := plus $i 1 }}
+<div class="row">
+  <div class="one column">
+    <label for="option-{{ $index }}">{{ $index }}.</label>
+  </div>
+  <div class="ten columns">
+    <input id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
+  </div>
+  <div class="one column">
+    <button>X</button>
+  </div>
+</div>
+{{ end }}

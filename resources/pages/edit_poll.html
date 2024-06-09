@@ -11,22 +11,11 @@
       </div>
     </div>
     <h3>Poll Options</h3>
-    {{ range $i, $_ := .Options }}
-    {{ $index := plus $i 1 }}
-    <div class="row">
-      <div class="one column">
-        <label for="option-{{ $index }}">{{ $index }}.</label>
-      </div>
-      <div class="ten columns">
-        <input id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
-      </div>
-      <div class="one column">
-        <button>X</button>
-      </div>
+    <div id="poll-options">
+      {{ template "edit_poll_options.html" . }}
     </div>
-    {{ end }}
     <div class="row">
-      <button>Add option</button>
+      <button hx-post="/polls/{{ .PollId }}/options" hx-target="#poll-options">Add option</button>
     </div>
     <div class="row">
       <button action="submit">Save</button>
