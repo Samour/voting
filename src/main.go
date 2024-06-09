@@ -15,10 +15,10 @@ func main() {
 	static := http.FileServer(http.Dir("resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 	http.HandleFunc("GET /{$}", controllers.ServeHome)
-	http.HandleFunc("GET /polls/new", controllers.ServeNewPoll)
-	http.HandleFunc("GET /polls/{id}/edit", controllers.ServeEditPoll)
+	http.HandleFunc("GET /polls/new/{$}", controllers.ServeNewPoll)
+	http.HandleFunc("GET /polls/{id}/edit/{$}", controllers.ServeEditPoll)
 	http.HandleFunc("POST /polls/{id}/{$}", controllers.HandleUpdatePoll)
-	http.HandleFunc("POST /polls/{id}/options", controllers.HandleAddPollOption)
+	http.HandleFunc("POST /polls/{id}/options/{$}", controllers.HandleAddPollOption)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
