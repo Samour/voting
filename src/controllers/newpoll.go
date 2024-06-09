@@ -1,4 +1,4 @@
-package polls
+package controllers
 
 import "net/http"
 

@@ -5,16 +5,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Samour/voting/controllers/home"
-	"github.com/Samour/voting/controllers/polls"
+	"github.com/Samour/voting/controllers"
 )
 
 func main() {
 	static := http.FileServer(http.Dir("resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
-	http.HandleFunc("GET /{$}", home.ServeHome)
-	http.HandleFunc("GET /polls/new", polls.ServeNewPoll)
-	http.HandleFunc("GET /polls/{id}/edit", polls.ServeEditPoll)
+	http.HandleFunc("GET /{$}", controllers.ServeHome)
+	http.HandleFunc("GET /polls/new", controllers.ServeNewPoll)
+	http.HandleFunc("GET /polls/{id}/edit", controllers.ServeEditPoll)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
