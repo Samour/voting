@@ -1,6 +1,9 @@
 package polls
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type PollDetails struct {
 	Name    string
@@ -59,6 +62,7 @@ func UpdateStatus(id string, status string) (*Poll, error) {
 		if poll.Status != "draft" {
 			return nil, errors.New("cannot open voting on poll")
 		}
+		poll.Statistics.OpenedAt = time.Now().In(time.UTC).Format(time.RFC3339)
 	} else {
 		return nil, errors.New("unknown status")
 	}

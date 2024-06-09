@@ -6,4 +6,11 @@ type Poll struct {
 	Status        string
 	Name          string
 	Options       []string
+	Statistics    VotingStatistics
+}
+
+type VotingStatistics struct {
+	OpenedAt string
+	Votes    int
+	ClosedAt string
 }
