@@ -15,6 +15,10 @@ create_table() {
     --attribute-definitions "$ATTRIBUTE_DEFINITIONS" \
     --key-schema "$KEY_SCHEMA" \
     --billing-mode "PAY_PER_REQUEST" >/dev/null
+  
+  echo "Created table $TABLE_NAME"
 }
 
 create_table polls
+
+echo "All tables created"
