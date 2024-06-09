@@ -9,8 +9,14 @@ const hot_reload = true
 
 var templates = template.Must(parseFiles())
 
+var tmplFunctions = template.FuncMap{
+	"plus": func(i int, j int) int {
+		return i + j
+	},
+}
+
 func parseFiles() (*template.Template, error) {
-	return template.ParseFiles(
+	return template.New("home.html").Funcs(tmplFunctions).ParseFiles(
 		"../resources/components/page_footer.html",
 		"../resources/components/page_header.html",
 

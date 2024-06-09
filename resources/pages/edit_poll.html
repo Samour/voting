@@ -1,23 +1,24 @@
 {{ template "page_header.html" }}
 <h1>New Poll</h1>
 <div>
-  <form>
+  <form action="/polls/{{ .PollId }}/" method="POST">
     <div class="row">
       <label for="poll-name">Name</label>
     </div>
     <div class="row">
       <div class="six columns">
-        <input id="poll-name" class="u-full-width" value="{{ .Name }}" />
+        <input id="poll-name" name="Name" class="u-full-width" value="{{ .Name }}" />
       </div>
     </div>
     <h3>Poll Options</h3>
-    {{ range .Options }}
+    {{ range $i, $_ := .Options }}
+    {{ $index := plus $i 1 }}
     <div class="row">
       <div class="one column">
-        <label for="option-1">1.</label>
+        <label for="option-{{ $index }}">{{ $index }}.</label>
       </div>
       <div class="ten columns">
-        <input id="option-1" class="u-full-width" />
+        <input id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
       </div>
       <div class="one column">
         <button>X</button>
@@ -28,7 +29,7 @@
       <button>Add option</button>
     </div>
     <div class="row">
-      <button>Save</button>
+      <button action="submit">Save</button>
     </div>
   </form>
 </div>

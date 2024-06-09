@@ -57,3 +57,20 @@ func getPollItem(id string) (*Poll, error) {
 
 	return poll, nil
 }
+
+func updatePollItem(p *Poll) error {
+	client := clients.DynamoDb()
+	condition := "attribute_exists(PollId)"
+	item, err := attributevalue.MarshalMap(p)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.PutItem(context.Background(), &dynamodb.PutItemInput{
+		TableName:           &tableName,
+		Item:                item,
+		ConditionExpression: &condition,
+	})
+
+	return err
+}
