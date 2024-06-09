@@ -77,8 +77,15 @@ func updatePollItem(p *Poll) error {
 
 func scanPollItems() ([]Poll, error) {
 	client := clients.DynamoDb()
+	filterExpression := "Discriminator = :discriminator"
 	items, err := client.Scan(context.Background(), &dynamodb.ScanInput{
-		TableName: &tableName,
+		TableName:        &tableName,
+		FilterExpression: &filterExpression,
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":discriminator": &types.AttributeValueMemberS{
+				Value: "poll",
+			},
+		},
 	})
 	if err != nil {
 		return nil, err
