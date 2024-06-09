@@ -1,6 +1,5 @@
 # Backlog
 
-- Create a poll
 - View polls
 - Cast a vote on poll (single vote)
 - Close a poll
