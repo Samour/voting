@@ -1,5 +1,16 @@
 package polls
 
+type PollDetails struct {
+	Name    string
+	Options []string
+}
+
+type PollOptionsUpdate struct {
+	Details PollDetails
+	Add     bool
+	Remove  int
+}
+
 func FetchPoll(id string) (*Poll, error) {
 	return getPollItem(id)
 }
@@ -23,4 +34,16 @@ func UpdatePollDetails(id string, name string, options []string) (*Poll, error) 
 	}
 
 	return poll, nil
+}
+
+func PatchPollOptions(id string, u PollOptionsUpdate) (*Poll, error) {
+	d := u.Details
+	if u.Remove >= 0 && u.Remove < len(d.Options) {
+		d.Options = append(d.Options[:u.Remove], d.Options[u.Remove+1:]...)
+	}
+	if u.Add {
+		d.Options = append(d.Options, "")
+	}
+
+	return UpdatePollDetails(id, d.Name, d.Options)
 }

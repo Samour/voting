@@ -1,3 +1,4 @@
+{{ $poll_id := .PollId }}
 {{ range $i, $_ := .Options }}
 {{ $index := plus $i 1 }}
 <div class="row">
@@ -8,7 +9,8 @@
     <input id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
   </div>
   <div class="one column">
-    <button>X</button>
+    <button hx-patch="/polls/{{ $poll_id }}/options/" hx-target="#poll-options" name="Remove"
+      value="{{ $i }}">X</button>
   </div>
 </div>
 {{ end }}

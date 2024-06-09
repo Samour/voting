@@ -17,8 +17,8 @@ func main() {
 	http.HandleFunc("GET /{$}", controllers.ServeHome)
 	http.HandleFunc("GET /polls/new/{$}", controllers.ServeNewPoll)
 	http.HandleFunc("GET /polls/{id}/edit/{$}", controllers.ServeEditPoll)
-	http.HandleFunc("POST /polls/{id}/{$}", controllers.HandleUpdatePoll)
-	http.HandleFunc("POST /polls/{id}/options/{$}", controllers.HandleAddPollOption)
+	http.HandleFunc("POST /polls/{id}/{$}", controllers.ServeSavePoll)
+	http.HandleFunc("PATCH /polls/{id}/options/{$}", controllers.HandlePatchPoll)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

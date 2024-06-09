@@ -15,7 +15,9 @@
       {{ template "edit_poll_options.html" . }}
     </div>
     <div class="row">
-      <button hx-post="/polls/{{ .PollId }}/options/" hx-target="#poll-options">Add option</button>
+      <button hx-patch="/polls/{{ .PollId }}/options/" hx-target="#poll-options" name="Add" value="true">
+        Add option
+      </button>
     </div>
     <div class="row">
       <button action="submit">Save</button>

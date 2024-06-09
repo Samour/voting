@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Samour/voting/polls"
 )
@@ -27,7 +28,7 @@ func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleUpdatePoll(w http.ResponseWriter, r *http.Request) {
+func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
@@ -54,7 +55,7 @@ func HandleUpdatePoll(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
-func HandleAddPollOption(w http.ResponseWriter, r *http.Request) {
+func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
@@ -64,8 +65,23 @@ func HandleAddPollOption(w http.ResponseWriter, r *http.Request) {
 
 	name := r.PostForm.Get("Name")
 	options := r.PostForm["Options[]"]
-	options = append(options, "")
-	poll, err := polls.UpdatePollDetails(pollId, name, options)
+	add := r.PostForm.Has("Add")
+	remove := -1
+	if r.PostForm.Has("Remove") {
+		remove, err = strconv.Atoi(r.PostForm.Get("Remove"))
+		if err != nil {
+			errorPage(w, err.Error(), http.StatusBadRequest)
+		}
+	}
+
+	poll, err := polls.PatchPollOptions(pollId, polls.PollOptionsUpdate{
+		Details: polls.PollDetails{
+			Name:    name,
+			Options: options,
+		},
+		Add:    add,
+		Remove: remove,
+	})
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 		return
