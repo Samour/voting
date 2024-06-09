@@ -48,7 +48,7 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	poll, err := polls.FetchPoll(pollId)
+	poll, err := polls.CastVote(pollId, option)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 		return

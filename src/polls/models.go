@@ -14,3 +14,10 @@ type VotingStatistics struct {
 	Votes    int
 	ClosedAt string
 }
+
+type Vote struct {
+	PollId        string
+	Discriminator string
+	Option        int
+	CastAt        string
+}
