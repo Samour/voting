@@ -41,7 +41,7 @@ func PatchPollOptions(id string, u PollOptionsUpdate) (*Poll, error) {
 	if u.Remove >= 0 && u.Remove < len(d.Options) {
 		d.Options = append(d.Options[:u.Remove], d.Options[u.Remove+1:]...)
 	}
-	if u.Add {
+	if u.Add || len(d.Options) == 0 {
 		d.Options = append(d.Options, "")
 	}
 
