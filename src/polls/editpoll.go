@@ -11,7 +11,7 @@ type PollOptionsUpdate struct {
 	Remove  int
 }
 
-func UpdatePollDetails(id string, name string, options []string) (*Poll, error) {
+func UpdatePollDetails(id string, d PollDetails) (*Poll, error) {
 	poll, err := getPollItem(id)
 	if err != nil {
 		return nil, err
@@ -22,8 +22,8 @@ func UpdatePollDetails(id string, name string, options []string) (*Poll, error) 
 
 	// TODO handle poll that is not in draft
 
-	poll.Name = name
-	poll.Options = options
+	poll.Name = d.Name
+	poll.Options = d.Options
 	err = updatePollItem(poll)
 	if err != nil {
 		return nil, err
@@ -41,5 +41,5 @@ func PatchPollOptions(id string, u PollOptionsUpdate) (*Poll, error) {
 		d.Options = append(d.Options, "")
 	}
 
-	return UpdatePollDetails(id, d.Name, d.Options)
+	return UpdatePollDetails(id, d)
 }

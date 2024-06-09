@@ -38,7 +38,10 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	name := r.PostForm.Get("Name")
 	options := r.PostForm["Options[]"]
 
-	poll, err := polls.UpdatePollDetails(pollId, name, options)
+	poll, err := polls.UpdatePollDetails(pollId, polls.PollDetails{
+		Name:    name,
+		Options: options,
+	})
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 		return
