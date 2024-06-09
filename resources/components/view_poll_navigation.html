@@ -1,0 +1,9 @@
+{{ if eq .Status "draft" }}
+<a href="/polls/{{ .PollId }}/edit/" class="button">Edit</a>
+<button hx-put="/polls/{{ .PollId }}/status/" name="Status" value="voting" hx-target="#poll-navigation">
+  Open voting
+</button>
+{{ else if eq .Status "voting" }}
+<a href="/polls/{{ .PollId }}/vote/">Vote</a>
+{{ end }}
+<a href="/" class="u-pull-right">Home</a>

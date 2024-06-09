@@ -1,5 +1,7 @@
 package polls
 
+import "errors"
+
 type PollDetails struct {
 	Name    string
 	Options []string
@@ -42,4 +44,30 @@ func PatchPollOptions(id string, u PollOptionsUpdate) (*Poll, error) {
 	}
 
 	return UpdatePollDetails(id, d)
+}
+
+func UpdateStatus(id string, status string) (*Poll, error) {
+	poll, err := getPollItem(id)
+	if err != nil {
+		return nil, err
+	}
+	if poll == nil {
+		return nil, nil
+	}
+
+	if status == "voting" {
+		if poll.Status != "draft" {
+			return nil, errors.New("cannot open voting on poll")
+		}
+	} else {
+		return nil, errors.New("unknown status")
+	}
+
+	poll.Status = status
+	err = updatePollItem(poll)
+	if err != nil {
+		return nil, err
+	}
+
+	return poll, nil
 }

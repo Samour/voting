@@ -96,3 +96,24 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
+func HandlePollStatusChange(w http.ResponseWriter, r *http.Request) {
+	pollId := r.PathValue("id")
+	err := r.ParseForm()
+	if err != nil {
+		errorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	status := r.PostForm.Get("Status")
+	poll, err := polls.UpdateStatus(pollId, status)
+	if err != nil {
+		errorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = renderTemplate(w, "view_poll_navigation.html", poll)
+	if err != nil {
+		errorPage(w, err.Error(), http.StatusInternalServerError)
+	}
+}

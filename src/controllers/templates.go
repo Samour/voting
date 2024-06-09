@@ -20,6 +20,7 @@ func parseFiles() (*template.Template, error) {
 		"../resources/components/edit_poll_options.html",
 		"../resources/components/page_footer.html",
 		"../resources/components/page_header.html",
+		"../resources/components/view_poll_navigation.html",
 
 		"../resources/pages/edit_poll.html",
 		"../resources/pages/error.html",
