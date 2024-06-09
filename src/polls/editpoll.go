@@ -11,10 +11,6 @@ type PollOptionsUpdate struct {
 	Remove  int
 }
 
-func FetchPoll(id string) (*Poll, error) {
-	return getPollItem(id)
-}
-
 func UpdatePollDetails(id string, name string, options []string) (*Poll, error) {
 	poll, err := getPollItem(id)
 	if err != nil {

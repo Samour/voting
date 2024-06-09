@@ -1,4 +1,12 @@
 {{ template "page_header.html" }}
+<h1>Polls</h1>
+<ul>
+  {{ range . }}
+  <li>
+    <a href="/polls/{{ .PollId }}/">{{ .Name }}</a>
+  </li>
+  {{ end }}
+</ul>
 <div>
   <a href="/polls/new">Create poll</a>
 </div>

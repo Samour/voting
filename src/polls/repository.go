@@ -74,3 +74,21 @@ func updatePollItem(p *Poll) error {
 
 	return err
 }
+
+func scanPollItems() ([]Poll, error) {
+	client := clients.DynamoDb()
+	items, err := client.Scan(context.Background(), &dynamodb.ScanInput{
+		TableName: &tableName,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]Poll, items.Count)
+	err = attributevalue.UnmarshalListOfMaps(items.Items, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
