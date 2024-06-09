@@ -1,7 +1,5 @@
 # Backlog
 
-- View polls
-- Cast a vote on poll (single vote)
 - Close a poll
 - Display poll results
 - Select poll type during creation
