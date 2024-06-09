@@ -15,6 +15,7 @@ func main() {
 	static := http.FileServer(http.Dir("resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 	http.HandleFunc("GET /{$}", controllers.ServeHome)
+	http.HandleFunc("GET /polls/{id}/{$}", controllers.ServeViewPoll)
 	http.HandleFunc("GET /polls/new/{$}", controllers.ServeNewPoll)
 	http.HandleFunc("GET /polls/{id}/edit/{$}", controllers.ServeEditPoll)
 	http.HandleFunc("POST /polls/{id}/{$}", controllers.ServeSavePoll)

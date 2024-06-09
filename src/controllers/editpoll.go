@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -51,8 +50,10 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 
 	// TODO render "view" screen
 	// For now, just redirect back to edit screen
-	redirect := fmt.Sprintf("/polls/%s/edit", pollId)
-	http.Redirect(w, r, redirect, http.StatusFound)
+	err = renderTemplate(w, "view_poll.html", poll)
+	if err != nil {
+		errorPage(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {

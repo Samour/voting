@@ -24,6 +24,7 @@ func parseFiles() (*template.Template, error) {
 		"../resources/pages/edit_poll.html",
 		"../resources/pages/error.html",
 		"../resources/pages/home.html",
+		"../resources/pages/view_poll.html",
 	)
 }
 

@@ -1,0 +1,15 @@
+{{ template "page_header.html" }}
+<h1>{{ .Name }}</h1>
+<h3>Poll options</h3>
+<div class="row">
+  <ol>
+    {{ range .Options }}
+    <li>{{ . }}</li>
+    {{ end }}
+  </ol>
+</div>
+<div class="row">
+  <a href="/polls/{{ .PollId }}/edit/" class="button">Edit</a>
+  <a href="/" class="u-pull-right">Home</a>
+</div>
+{{ template "page_footer.html" }}
