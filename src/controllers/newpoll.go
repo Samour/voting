@@ -1,7 +1,15 @@
 package controllers
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/Samour/voting/polls"
+)
 
 func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/polls/1/edit", http.StatusFound)
+	id := polls.CreatePoll()
+
+	redirect := fmt.Sprintf("/polls/%s/edit", id)
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
