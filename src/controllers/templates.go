@@ -1,12 +1,33 @@
 package controllers
 
-import "html/template"
+import (
+	"html/template"
+	"net/http"
+)
 
-var templates = template.Must(template.ParseFiles(
-	"../resources/components/page_footer.html",
-	"../resources/components/page_header.html",
+const hot_reload = true
 
-	"../resources/pages/edit_poll.html",
-	"../resources/pages/error.html",
-	"../resources/pages/home.html",
-))
+var templates = template.Must(parseFiles())
+
+func parseFiles() (*template.Template, error) {
+	return template.ParseFiles(
+		"../resources/components/page_footer.html",
+		"../resources/components/page_header.html",
+
+		"../resources/pages/edit_poll.html",
+		"../resources/pages/error.html",
+		"../resources/pages/home.html",
+	)
+}
+
+func renderTemplate(w http.ResponseWriter, name string, model any) error {
+	if hot_reload {
+		tmpl, err := parseFiles()
+		if err != nil {
+			return err
+		}
+		return tmpl.ExecuteTemplate(w, name, model)
+	} else {
+		return templates.ExecuteTemplate(w, name, model)
+	}
+}

@@ -18,7 +18,7 @@ func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = templates.ExecuteTemplate(w, "edit_poll.html", poll)
+	err = renderTemplate(w, "edit_poll.html", poll)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}
