@@ -5,9 +5,9 @@ import (
 )
 
 func ServeHome(w http.ResponseWriter, r *http.Request) {
-	err := Templates.ExecuteTemplate(w, "home.html", nil)
+	err := templates.ExecuteTemplate(w, "home.html", nil)
 	if err != nil {
-		ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		errorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

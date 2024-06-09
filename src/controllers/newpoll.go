@@ -10,7 +10,7 @@ import (
 func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
 	id, err := polls.CreatePoll()
 	if err != nil {
-		ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		errorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
