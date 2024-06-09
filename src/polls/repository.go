@@ -11,7 +11,7 @@ import (
 
 var tableName = "polls"
 
-func insertNewPollItem(p *PollItem) error {
+func insertNewPollItem(p *Poll) error {
 	client := clients.DynamoDb()
 	condition := "attribute_not_exists(PollId)"
 	item, err := attributevalue.MarshalMap(p)
@@ -28,7 +28,7 @@ func insertNewPollItem(p *PollItem) error {
 	return err
 }
 
-func getPollItem(id string) (*PollItem, error) {
+func getPollItem(id string) (*Poll, error) {
 	client := clients.DynamoDb()
 	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
 		TableName: &tableName,
@@ -49,7 +49,7 @@ func getPollItem(id string) (*PollItem, error) {
 		return nil, nil
 	}
 
-	poll := &PollItem{}
+	poll := &Poll{}
 	err = attributevalue.UnmarshalMap(item.Item, poll)
 	if err != nil {
 		return nil, err

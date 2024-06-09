@@ -6,7 +6,7 @@ import (
 
 func CreatePoll() (*string, error) {
 	id := utils.IdGen()
-	poll := PollItem{
+	poll := Poll{
 		PollId:        id,
 		Discriminator: "poll",
 		Status:        "draft",

@@ -1,6 +1,6 @@
 package polls
 
-type PollItem struct {
+type Poll struct {
 	PollId        string
 	Discriminator string
 	Status        string
