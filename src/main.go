@@ -19,7 +19,7 @@ func main() {
 	http.HandleFunc("GET /polls/new/{$}", controllers.ServeNewPoll)
 	http.HandleFunc("GET /polls/{id}/edit/{$}", controllers.ServeEditPoll)
 	http.HandleFunc("POST /polls/{id}/{$}", controllers.ServeSavePoll)
-	http.HandleFunc("PATCH /polls/{id}/options/{$}", controllers.HandlePatchPoll)
+	http.HandleFunc("PATCH /polls/options/{$}", controllers.HandlePatchPoll)
 	http.HandleFunc("PUT /polls/{id}/status/{$}", controllers.HandlePollStatusChange)
 	http.HandleFunc("GET /polls/{id}/vote/{$}", controllers.ServeVotePoll)
 	http.HandleFunc("POST /polls/{id}/vote/{$}", controllers.ServeCastVote)

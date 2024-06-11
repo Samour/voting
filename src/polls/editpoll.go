@@ -11,9 +11,8 @@ type PollDetails struct {
 }
 
 type PollOptionsUpdate struct {
-	Details PollDetails
-	Add     bool
-	Remove  int
+	Add    bool
+	Remove int
 }
 
 func UpdatePollDetails(id string, d PollDetails) (*Poll, error) {
@@ -37,16 +36,15 @@ func UpdatePollDetails(id string, d PollDetails) (*Poll, error) {
 	return poll, nil
 }
 
-func PatchPollOptions(id string, u PollOptionsUpdate) (*Poll, error) {
-	d := u.Details
-	if u.Remove >= 0 && u.Remove < len(d.Options) {
-		d.Options = append(d.Options[:u.Remove], d.Options[u.Remove+1:]...)
+func PatchPollOptions(options []string, u PollOptionsUpdate) []string {
+	if u.Remove >= 0 && u.Remove < len(options) {
+		options = append(options[:u.Remove], options[u.Remove+1:]...)
 	}
-	if u.Add || len(d.Options) == 0 {
-		d.Options = append(d.Options, "")
+	if u.Add || len(options) == 0 {
+		options = append(options, "")
 	}
 
-	return UpdatePollDetails(id, d)
+	return options
 }
 
 func UpdateStatus(id string, status string) (*Poll, error) {
