@@ -22,6 +22,11 @@ func updateStatus(id string, status string) (*model.Poll, error) {
 			return nil, errors.New("cannot open voting on poll")
 		}
 		poll.Statistics.OpenedAt = time.Now().In(time.UTC).Format(time.RFC3339)
+	} else if status == "closed" {
+		if poll.Status != "voting" {
+			return nil, errors.New("voting is not currently open on poll")
+		}
+		poll.Statistics.ClosedAt = time.Now().In(time.UTC).Format(time.RFC3339)
 	} else {
 		return nil, errors.New("unknown status")
 	}
