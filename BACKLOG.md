@@ -1,6 +1,5 @@
 # Backlog
 
-- Close a poll
 - Display poll results
 - Select poll type during creation
 - Cast a ranked-choice vote
