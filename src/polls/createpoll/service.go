@@ -10,8 +10,8 @@ func createPoll() (*string, error) {
 	id := utils.IdGen()
 	poll := model.Poll{
 		PollId:        id,
-		Discriminator: "poll",
-		Status:        "draft",
+		Discriminator: model.DiscriminatorPoll,
+		Status:        model.PollStatusDraft,
 		Name:          "",
 		Options:       []string{""},
 	}

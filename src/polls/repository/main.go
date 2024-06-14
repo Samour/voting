@@ -38,7 +38,7 @@ func GetPollItem(id string) (*model.Poll, error) {
 				Value: id,
 			},
 			"Discriminator": &types.AttributeValueMemberS{
-				Value: "poll",
+				Value: model.DiscriminatorPoll,
 			},
 		},
 	})
@@ -84,7 +84,7 @@ func ScanPollItems() ([]model.Poll, error) {
 		FilterExpression: &filterExpression,
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":discriminator": &types.AttributeValueMemberS{
-				Value: "poll",
+				Value: model.DiscriminatorPoll,
 			},
 		},
 	})
@@ -130,7 +130,7 @@ func RecordVote(v *model.Vote) error {
 					Value: v.PollId,
 				},
 				"Discriminator": &types.AttributeValueMemberS{
-					Value: "poll",
+					Value: model.DiscriminatorPoll,
 				},
 			},
 			UpdateExpression:    &statisticsUpdate,

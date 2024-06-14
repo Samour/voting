@@ -18,7 +18,7 @@ func getPoll(id string) (*editPollModel, error) {
 
 	return &editPollModel{
 		Poll:    poll,
-		MayEdit: poll.Status == "draft",
+		MayEdit: poll.Status == model.PollStatusDraft,
 	}, nil
 }
 
@@ -31,7 +31,7 @@ func updatePollDetails(id string, d pollDetails) (*model.Poll, error) {
 		return nil, nil
 	}
 
-	if poll.Status != "draft" {
+	if poll.Status != model.PollStatusDraft {
 		return nil, errors.New("cannot edit poll that is not in draft status")
 	}
 

@@ -33,13 +33,13 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 		return nil, nil
 	}
 
-	if status == "voting" {
-		if poll.Status != "draft" {
+	if status == model.PollStatusVoting {
+		if poll.Status != model.PollStatusDraft {
 			return nil, errors.New("cannot open voting on poll")
 		}
 		poll.Statistics.OpenedAt = time.Now().In(time.UTC).Format(time.RFC3339)
-	} else if status == "closed" {
-		if poll.Status != "voting" {
+	} else if status == model.PollStatusClosed {
+		if poll.Status != model.PollStatusVoting {
 			return nil, errors.New("voting is not currently open on poll")
 		}
 		poll.Statistics.ClosedAt = time.Now().In(time.UTC).Format(time.RFC3339)

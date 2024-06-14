@@ -2,7 +2,6 @@ package castvote
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/Samour/voting/polls/model"
@@ -21,7 +20,7 @@ func getPoll(id string) (*castVoteModel, error) {
 
 	return &castVoteModel{
 		Poll:    poll,
-		MayVote: poll.Status == "voting",
+		MayVote: poll.Status == model.PollStatusVoting,
 		Voted:   -1,
 	}, nil
 }
@@ -32,12 +31,16 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 		return nil, err
 	}
 
+	if poll.Status != model.PollStatusVoting {
+		return nil, errors.New("poll is not open for voting")
+	}
+
 	if option < 0 || option >= len(poll.Options) {
 		return nil, errors.New("invalid option provided")
 	}
 
 	voteId := utils.IdGen()
-	discriminator := fmt.Sprintf("vote:%s", voteId)
+	discriminator := model.DiscriminatorVote + voteId
 	vote := model.Vote{
 		PollId:        pollId,
 		Discriminator: discriminator,
