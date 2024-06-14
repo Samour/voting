@@ -1,21 +1,24 @@
-package controllers
+package castvote
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/render"
 )
 
+var renderer = render.Must(render.CreateRenderer("../resources/pages/*.html"))
+
 type PollVoteForm struct {
-	Poll  *polls.Poll
+	Poll  *model.Poll
 	Voted int
 }
 
 func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	poll, err := polls.FetchPoll(pollId)
+	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -49,7 +52,7 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	poll, err := polls.CastVote(pollId, option)
+	poll, err := castVote(pollId, option)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -6,23 +6,32 @@ import (
 	"net/http"
 
 	"github.com/Samour/voting/clients"
-	"github.com/Samour/voting/controllers"
+	"github.com/Samour/voting/home"
+	"github.com/Samour/voting/polls"
 )
 
 func main() {
 	clients.WarmDynamoDbClient()
 
+	homeControllers := home.CreateHomeControllers()
+	pollControllers := polls.CreatePollControllers()
+
 	static := http.FileServer(http.Dir("resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
-	http.HandleFunc("GET /{$}", controllers.ServeHome)
-	http.HandleFunc("GET /polls/{id}/{$}", controllers.ServeViewPoll)
-	http.HandleFunc("GET /polls/new/{$}", controllers.ServeNewPoll)
-	http.HandleFunc("GET /polls/{id}/edit/{$}", controllers.ServeEditPoll)
-	http.HandleFunc("POST /polls/{id}/{$}", controllers.ServeSavePoll)
-	http.HandleFunc("PATCH /polls/options/{$}", controllers.HandlePatchPoll)
-	http.HandleFunc("PUT /polls/{id}/status/{$}", controllers.HandlePollStatusChange)
-	http.HandleFunc("GET /polls/{id}/vote/{$}", controllers.ServeVotePoll)
-	http.HandleFunc("POST /polls/{id}/vote/{$}", controllers.ServeCastVote)
+
+	http.HandleFunc("GET /{$}", homeControllers.ServeHome)
+
+	http.HandleFunc("GET /polls/{id}/{$}", pollControllers.ServeViewPoll)
+	http.HandleFunc("PUT /polls/{id}/status/{$}", pollControllers.HandlePollStatusChange)
+
+	http.HandleFunc("GET /polls/new/{$}", pollControllers.ServeNewPoll)
+
+	http.HandleFunc("GET /polls/{id}/edit/{$}", pollControllers.ServeEditPoll)
+	http.HandleFunc("POST /polls/{id}/{$}", pollControllers.ServeSavePoll)
+	http.HandleFunc("PATCH /polls/options/{$}", pollControllers.HandlePatchPoll)
+
+	http.HandleFunc("GET /polls/{id}/vote/{$}", pollControllers.ServeVotePoll)
+	http.HandleFunc("POST /polls/{id}/vote/{$}", pollControllers.ServeCastVote)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

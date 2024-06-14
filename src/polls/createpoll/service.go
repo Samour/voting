@@ -1,12 +1,14 @@
-package polls
+package createpoll
 
 import (
+	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/utils"
 )
 
-func CreatePoll() (*string, error) {
+func createPoll() (*string, error) {
 	id := utils.IdGen()
-	poll := Poll{
+	poll := model.Poll{
 		PollId:        id,
 		Discriminator: "poll",
 		Status:        "draft",
@@ -14,7 +16,7 @@ func CreatePoll() (*string, error) {
 		Options:       []string{""},
 	}
 
-	err := insertNewPollItem(&poll)
+	err := repository.InsertNewPollItem(&poll)
 	if err != nil {
 		return nil, err
 	}

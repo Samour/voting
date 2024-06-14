@@ -1,4 +1,4 @@
-package polls
+package model
 
 type Poll struct {
 	PollId        string

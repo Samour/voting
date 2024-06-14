@@ -1,9 +1,10 @@
-package polls
+package repository
 
 import (
 	"context"
 
 	"github.com/Samour/voting/clients"
+	"github.com/Samour/voting/polls/model"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -11,7 +12,7 @@ import (
 
 var tableName = "polls"
 
-func insertNewPollItem(p *Poll) error {
+func InsertNewPollItem(p *model.Poll) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {
@@ -28,7 +29,7 @@ func insertNewPollItem(p *Poll) error {
 	return err
 }
 
-func getPollItem(id string) (*Poll, error) {
+func GetPollItem(id string) (*model.Poll, error) {
 	client := clients.DynamoDb()
 	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
 		TableName: &tableName,
@@ -49,7 +50,7 @@ func getPollItem(id string) (*Poll, error) {
 		return nil, nil
 	}
 
-	poll := &Poll{}
+	poll := &model.Poll{}
 	err = attributevalue.UnmarshalMap(item.Item, poll)
 	if err != nil {
 		return nil, err
@@ -58,7 +59,7 @@ func getPollItem(id string) (*Poll, error) {
 	return poll, nil
 }
 
-func updatePollItem(p *Poll) error {
+func UpdatePollItem(p *model.Poll) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {
@@ -75,7 +76,7 @@ func updatePollItem(p *Poll) error {
 	return err
 }
 
-func scanPollItems() ([]Poll, error) {
+func ScanPollItems() ([]model.Poll, error) {
 	client := clients.DynamoDb()
 	filterExpression := "Discriminator = :discriminator"
 	items, err := client.Scan(context.Background(), &dynamodb.ScanInput{
@@ -91,7 +92,7 @@ func scanPollItems() ([]Poll, error) {
 		return nil, err
 	}
 
-	result := make([]Poll, items.Count)
+	result := make([]model.Poll, items.Count)
 	err = attributevalue.UnmarshalListOfMaps(items.Items, &result)
 	if err != nil {
 		return nil, err
@@ -100,7 +101,7 @@ func scanPollItems() ([]Poll, error) {
 	return result, nil
 }
 
-func recordVote(v *Vote) error {
+func RecordVote(v *model.Vote) error {
 	client := clients.DynamoDb()
 
 	voteItem, err := attributevalue.MarshalMap(v)

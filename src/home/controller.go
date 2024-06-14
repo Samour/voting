@@ -1,14 +1,16 @@
-package controllers
+package home
 
 import (
 	"net/http"
 
-	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/polls/getpolls"
 	"github.com/Samour/voting/render"
 )
 
+var renderer = render.Must(render.CreateRenderer("../resources/pages/*.html"))
+
 func ServeHome(w http.ResponseWriter, r *http.Request) {
-	polls, err := polls.FetchAllPolls()
+	polls, err := getpolls.FetchAllPolls()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return

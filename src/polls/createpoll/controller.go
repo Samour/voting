@@ -1,15 +1,14 @@
-package controllers
+package createpoll
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/Samour/voting/polls"
 	"github.com/Samour/voting/render"
 )
 
 func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
-	id, err := polls.CreatePoll()
+	id, err := createPoll()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return

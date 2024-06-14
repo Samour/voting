@@ -1,26 +1,28 @@
-package polls
+package castvote
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/utils"
 )
 
-func CastVote(pollId string, option int) (*Poll, error) {
+func castVote(pollId string, option int) (*model.Poll, error) {
 	voteId := utils.IdGen()
 	discriminator := fmt.Sprintf("vote:%s", voteId)
-	vote := Vote{
+	vote := model.Vote{
 		PollId:        pollId,
 		Discriminator: discriminator,
 		Option:        option,
 		CastAt:        time.Now().In(time.UTC).Format(time.RFC3339),
 	}
 
-	err := recordVote(&vote)
+	err := repository.RecordVote(&vote)
 	if err != nil {
 		return nil, err
 	}
 
-	return getPollItem(pollId)
+	return repository.GetPollItem(pollId)
 }

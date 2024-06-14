@@ -1,10 +1,10 @@
-package controllers
+package editpoll
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/render"
 )
 
@@ -12,7 +12,7 @@ var renderer = render.Must(render.CreateRenderer("../resources/pages/*.html"))
 
 func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	poll, err := polls.FetchPoll(pollId)
+	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,7 +41,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	name := r.PostForm.Get("Name")
 	options := r.PostForm["Options[]"]
 
-	poll, err := polls.UpdatePollDetails(pollId, polls.PollDetails{
+	poll, err := updatePollDetails(pollId, pollDetails{
 		Name:    name,
 		Options: options,
 	})
@@ -83,7 +83,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	options = polls.PatchPollOptions(options, polls.PollOptionsUpdate{
+	options = patchPollOptions(options, pollOptionsUpdate{
 		Add:    add,
 		Remove: remove,
 	})
@@ -95,27 +95,6 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 	err = renderer.Render(w, "edit_poll_options.html", optionsForm{
 		Options: options,
 	})
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func HandlePollStatusChange(w http.ResponseWriter, r *http.Request) {
-	pollId := r.PathValue("id")
-	err := r.ParseForm()
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	status := r.PostForm.Get("Status")
-	poll, err := polls.UpdateStatus(pollId, status)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = renderer.Render(w, "view_poll_navigation.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
