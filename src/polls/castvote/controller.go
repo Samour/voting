@@ -9,7 +9,7 @@ import (
 	"github.com/Samour/voting/render"
 )
 
-var renderer = render.Must(render.CreateRenderer("../resources/pages/*.html"))
+var renderer = render.Must(render.CreateRenderer("pages/poll_vote.html"))
 
 type PollVoteForm struct {
 	Poll  *model.Poll

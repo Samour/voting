@@ -12,7 +12,7 @@
     </div>
     <h3>Poll Options</h3>
     <div id="poll-options">
-      {{ template "edit_poll_options.html" . }}
+      {{ template "poll_options.html" . }}
     </div>
     <div class="row">
       <button hx-patch="/polls/options/" hx-target="#poll-options" name="Add" value="true">

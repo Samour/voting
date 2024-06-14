@@ -5,7 +5,7 @@ import "net/http"
 var errorRenderer = Must(createErrorRenderer())
 
 func createErrorRenderer() (*Renderer, error) {
-	renderer, err := CreateRenderer("../resources/pages/error.html")
+	renderer, err := CreateRenderer("pages/error.html")
 	if err != nil {
 		return nil, err
 	}

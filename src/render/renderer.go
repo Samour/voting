@@ -20,8 +20,10 @@ type Renderer struct {
 }
 
 func CreateRenderer(globs ...string) (*Renderer, error) {
-	allGlobs := []string{"../resources/components/*.html"}
-	allGlobs = append(allGlobs, globs...)
+	allGlobs := []string{"../resources/tmpl/common/*.html"}
+	for _, glob := range globs {
+		allGlobs = append(allGlobs, "../resources/tmpl/"+glob)
+	}
 
 	tmpl, err := parseGlobs(allGlobs)
 	if err != nil {
