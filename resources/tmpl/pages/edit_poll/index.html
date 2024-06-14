@@ -15,13 +15,17 @@
       {{ template "poll_options.html" . }}
     </div>
     <div class="row">
-      <button hx-patch="/polls/options/" hx-target="#poll-options" name="Add" value="true">
-        Add option
-      </button>
+      <div class="twelve columns">
+        <button hx-patch="/polls/options/" hx-target="#poll-options" name="Add" value="true">
+          Add option
+        </button>
+      </div>
     </div>
-    <div class="row">
-      <button action="submit">Save</button>
-      <a href="/polls/{{ .PollId }}" class="button">Cancel</a>
+    <div class="row normal-spacing">
+      <div class="twelve columns">
+        <button action="submit">Save</button>
+        <a href="/polls/{{ .PollId }}" class="button">Cancel</a>
+      </div>
     </div>
   </form>
 </div>

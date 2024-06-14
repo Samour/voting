@@ -1,17 +1,23 @@
 {{ if eq .Status "draft" }}
 <div class="row">
-  <a href="/polls/{{ .PollId }}/edit/" class="button">Edit</a>
-  <button hx-put="/polls/{{ .PollId }}/status/" name="Status" value="voting" hx-target="#poll-navigation">
-    Open voting
-  </button>
-  {{ else if eq .Status "voting" }}
-  <div class="row">
-    <div class="twelve columns">
-      <strong>Votes cast:</strong> {{ .Statistics.Votes }}
-    </div>
-  </div>
-  <div class="row">
-    <a href="/polls/{{ .PollId }}/vote/">Vote</a>
-    {{ end }}
+  <div class="twelve columns">
+    <a href="/polls/{{ .PollId }}/edit/" class="button">Edit</a>
+    <button hx-put="/polls/{{ .PollId }}/status/" name="Status" value="voting" hx-target="#poll-navigation">
+      Open voting
+    </button>
     <a href="/" class="u-pull-right">Home</a>
   </div>
+</div>
+{{ else if eq .Status "voting" }}
+<div class="row">
+  <div class="twelve columns">
+    <strong>Votes cast:</strong> {{ .Statistics.Votes }}
+  </div>
+</div>
+<div class="row normal-spacing">
+  <div class="twelve columns">
+    <a href="/polls/{{ .PollId }}/vote/">Vote</a>
+    <a href="/" class="u-pull-right">Home</a>
+  </div>
+</div>
+{{ end }}

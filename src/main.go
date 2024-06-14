@@ -16,7 +16,7 @@ func main() {
 	homeControllers := home.CreateHomeControllers()
 	pollControllers := polls.CreatePollControllers()
 
-	static := http.FileServer(http.Dir("resources/static/"))
+	static := http.FileServer(http.Dir("../resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 
 	http.HandleFunc("GET /{$}", homeControllers.ServeHome)

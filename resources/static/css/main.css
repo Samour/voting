@@ -1,0 +1,14 @@
+.container {
+  margin-top: 30px;
+}
+
+.row.normal-spacing {
+  margin-top: 15px;
+}
+
+.column a.button:not(:first-child),
+.columns a.button:not(:first-child),
+.column button:not(:first-child),
+.columns button:not(:first-child) {
+  margin-left: 10px;
+}
