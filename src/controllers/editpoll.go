@@ -5,19 +5,20 @@ import (
 	"strconv"
 
 	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/render"
 )
 
-var renderer = Must(CreateRenderer("../resources/pages/*.html"))
+var renderer = render.Must(render.CreateRenderer("../resources/pages/*.html"))
 
 func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	poll, err := polls.FetchPoll(pollId)
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if poll == nil {
-		errorPage(w, "Poll not found", http.StatusNotFound)
+		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
 		return
 	}
 
@@ -25,7 +26,7 @@ func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 
 	err = renderer.Render(w, "edit_poll.html", poll)
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -33,7 +34,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusBadRequest)
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -45,11 +46,11 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 		Options: options,
 	})
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if poll == nil {
-		errorPage(w, "Poll not found", http.StatusNotFound)
+		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
 		return
 	}
 
@@ -57,7 +58,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	// For now, just redirect back to edit screen
 	err = renderer.Render(w, "view_poll.html", poll)
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -68,7 +69,7 @@ type optionsForm struct {
 func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusBadRequest)
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -78,7 +79,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 	if r.PostForm.Has("Remove") {
 		remove, err = strconv.Atoi(r.PostForm.Get("Remove"))
 		if err != nil {
-			errorPage(w, err.Error(), http.StatusBadRequest)
+			render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		}
 	}
 
@@ -87,7 +88,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		Remove: remove,
 	})
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -95,7 +96,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		Options: options,
 	})
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -103,19 +104,19 @@ func HandlePollStatusChange(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusBadRequest)
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	status := r.PostForm.Get("Status")
 	poll, err := polls.UpdateStatus(pollId, status)
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = renderer.Render(w, "view_poll_navigation.html", poll)
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }

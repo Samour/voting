@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/render"
 )
 
 func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
 	id, err := polls.CreatePoll()
 	if err != nil {
-		errorPage(w, err.Error(), http.StatusInternalServerError)
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

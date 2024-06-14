@@ -1,4 +1,4 @@
-package controllers
+package render
 
 import (
 	"html/template"
