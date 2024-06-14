@@ -7,6 +7,8 @@ import (
 	"github.com/Samour/voting/polls"
 )
 
+var renderer = Must(CreateRenderer("../resources/pages/*.html"))
+
 func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	poll, err := polls.FetchPoll(pollId)
@@ -21,7 +23,7 @@ func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 
 	// TODO handle poll that is not in draft
 
-	err = renderTemplate(w, "edit_poll.html", poll)
+	err = renderer.Render(w, "edit_poll.html", poll)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -53,7 +55,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 
 	// TODO render "view" screen
 	// For now, just redirect back to edit screen
-	err = renderTemplate(w, "view_poll.html", poll)
+	err = renderer.Render(w, "view_poll.html", poll)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -89,7 +91,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderTemplate(w, "edit_poll_options.html", optionsForm{
+	err = renderer.Render(w, "edit_poll_options.html", optionsForm{
 		Options: options,
 	})
 	if err != nil {
@@ -112,7 +114,7 @@ func HandlePollStatusChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderTemplate(w, "view_poll_navigation.html", poll)
+	err = renderer.Render(w, "view_poll_navigation.html", poll)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}

@@ -18,7 +18,7 @@ func ServeViewPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderTemplate(w, "view_poll.html", poll)
+	err = renderer.Render(w, "view_poll.html", poll)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}

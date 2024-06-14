@@ -28,7 +28,7 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 		Poll:  poll,
 		Voted: -1,
 	}
-	err = renderTemplate(w, "poll_vote.html", f)
+	err = renderer.Render(w, "poll_vote.html", f)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -62,7 +62,7 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		Poll:  poll,
 		Voted: option,
 	}
-	err = renderTemplate(w, "poll_vote.html", f)
+	err = renderer.Render(w, "poll_vote.html", f)
 	if err != nil {
 		errorPage(w, err.Error(), http.StatusInternalServerError)
 	}

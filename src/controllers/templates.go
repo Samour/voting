@@ -7,37 +7,64 @@ import (
 
 const hot_reload = true
 
-var templates = template.Must(parseFiles())
-
 var tmplFunctions = template.FuncMap{
 	"plus": func(i int, j int) int {
 		return i + j
 	},
 }
 
-func parseFiles() (*template.Template, error) {
-	return template.New("home.html").Funcs(tmplFunctions).ParseFiles(
-		"../resources/components/edit_poll_options.html",
-		"../resources/components/page_footer.html",
-		"../resources/components/page_header.html",
-		"../resources/components/view_poll_navigation.html",
-
-		"../resources/pages/edit_poll.html",
-		"../resources/pages/error.html",
-		"../resources/pages/home.html",
-		"../resources/pages/poll_vote.html",
-		"../resources/pages/view_poll.html",
-	)
+type Renderer struct {
+	HotReload bool
+	globs     []string
+	tmpl      *template.Template
 }
 
-func renderTemplate(w http.ResponseWriter, name string, model any) error {
-	if hot_reload {
-		tmpl, err := parseFiles()
+func CreateRenderer(globs ...string) (*Renderer, error) {
+	allGlobs := []string{"../resources/components/*.html"}
+	allGlobs = append(allGlobs, globs...)
+
+	tmpl, err := parseGlobs(allGlobs)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Renderer{
+		HotReload: hot_reload,
+		globs:     allGlobs,
+		tmpl:      tmpl,
+	}, nil
+}
+
+func parseGlobs(globs []string) (*template.Template, error) {
+	template := template.New("index.html").Funcs(tmplFunctions)
+
+	for _, glob := range globs {
+		var err error
+		template, err = template.ParseGlob(glob)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return template, nil
+}
+
+func (r *Renderer) Render(w http.ResponseWriter, name string, model any) error {
+	if r.HotReload {
+		tmpl, err := parseGlobs(r.globs)
 		if err != nil {
 			return err
 		}
 		return tmpl.ExecuteTemplate(w, name, model)
 	} else {
-		return templates.ExecuteTemplate(w, name, model)
+		return r.tmpl.ExecuteTemplate(w, name, model)
 	}
+}
+
+func Must(r *Renderer, err error) *Renderer {
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return r
 }
