@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Samour/voting/polls/repository"
+	"github.com/Samour/voting/polls/viewpoll"
 	"github.com/Samour/voting/render"
 )
 
@@ -55,7 +56,8 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = viewPollRenderer.Render(w, "index.html", poll)
+	viewPollModel := viewpoll.ToViewPollModel(poll)
+	err = viewPollRenderer.Render(w, "index.html", viewPollModel)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}

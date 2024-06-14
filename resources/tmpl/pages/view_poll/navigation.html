@@ -1,33 +1,38 @@
-{{ if eq .Status "draft" }}
+{{ if .OobStatusUpdate }}
+<span id="poll-status" hx-swap-oob="true">
+  {{ .Poll.Status }}
+</span>
+{{ end }}
+{{ if eq .Poll.Status "draft" }}
 <div class="row">
   <div class="twelve columns">
-    <a href="/polls/{{ .PollId }}/edit/" class="button">Edit</a>
-    <button hx-put="/polls/{{ .PollId }}/status/" name="Status" value="voting" hx-target="#poll-navigation">
+    <a href="/polls/{{ .Poll.PollId }}/edit/" class="button">Edit</a>
+    <button hx-put="/polls/{{ .Poll.PollId }}/status/" name="Status" value="voting" hx-target="#poll-navigation">
       Open voting
     </button>
     <a href="/" class="u-pull-right">Home</a>
   </div>
 </div>
-{{ else if eq .Status "voting" }}
+{{ else if eq .Poll.Status "voting" }}
 <div class="row">
   <div class="twelve columns">
-    <strong>Votes cast:</strong> {{ .Statistics.Votes }}
+    <strong>Votes cast:</strong> {{ .Poll.Statistics.Votes }}
   </div>
 </div>
 <div class="row normal-spacing">
   <div class="twelve columns">
-    <button hx-put="/polls/{{ .PollId }}/status/" name="Status" value="closed" hx-target="#poll-navigation">
+    <button hx-put="/polls/{{ .Poll.PollId }}/status/" name="Status" value="closed" hx-target="#poll-navigation">
       Close voting
     </button>
   </div>
 </div>
 <div class="row normal-spacing">
   <div class="twelve columns">
-    <a href="/polls/{{ .PollId }}/vote/">Vote</a>
+    <a href="/polls/{{ .Poll.PollId }}/vote/">Vote</a>
     <a href="/" class="u-pull-right">Home</a>
   </div>
 </div>
-{{ else if eq .Status "closed" }}
+{{ else if eq .Poll.Status "closed" }}
 <div class="row">
   <div class="twelve columns">
     <a href="/" class="u-pull-right">Home</a>

@@ -8,7 +8,23 @@ import (
 	"github.com/Samour/voting/polls/repository"
 )
 
-func updateStatus(id string, status string) (*model.Poll, error) {
+func getPoll(id string) (*model.ViewPollModel, error) {
+	poll, err := repository.GetPollItem(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToViewPollModel(poll), nil
+}
+
+func ToViewPollModel(p *model.Poll) *model.ViewPollModel {
+	return &model.ViewPollModel{
+		Poll:            p,
+		OobStatusUpdate: false,
+	}
+}
+
+func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 	poll, err := repository.GetPollItem(id)
 	if err != nil {
 		return nil, err
@@ -37,5 +53,8 @@ func updateStatus(id string, status string) (*model.Poll, error) {
 		return nil, err
 	}
 
-	return poll, nil
+	return &model.ViewPollModel{
+		Poll:            poll,
+		OobStatusUpdate: true,
+	}, nil
 }

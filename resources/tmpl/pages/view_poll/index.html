@@ -1,15 +1,14 @@
 {{ template "page_header.html" }}
-<h1>{{ .Name }}</h1>
+<h1>{{ .Poll.Name }}</h1>
 <div class="row">
   <div class="twelve columns">
-    {{- /* TODO This doesn't update on ajax status change. Find a fix at some point */ -}}
-    <strong>Status:</strong> {{ .Status }}
+    <strong>Status:</strong> <span id="poll-status">{{ .Poll.Status }}</span>
   </div>
 </div>
 <h3>Poll options</h3>
 <div class="row">
   <ol>
-    {{ range .Options }}
+    {{ range .Poll.Options }}
     <li>{{ . }}</li>
     {{ end }}
   </ol>
