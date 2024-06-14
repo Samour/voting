@@ -14,7 +14,12 @@ func getPoll(id string) (*model.ViewPollModel, error) {
 		return nil, err
 	}
 
-	return ToViewPollModel(poll, nil), nil
+	pollResult, err := repository.GetPollResultItem(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToViewPollModel(poll, pollResult), nil
 }
 
 func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
@@ -25,6 +30,7 @@ func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 
 	return &model.ViewPollModel{
 		Poll:            p,
+		PollResult:      r,
 		StatusLabel:     statusLabel,
 		OobStatusUpdate: false,
 	}

@@ -148,3 +148,34 @@ func RecordVote(v *model.Vote) error {
 	})
 	return err
 }
+
+func GetPollResultItem(id string) (*model.PollResult, error) {
+	client := clients.DynamoDb()
+
+	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
+		TableName: &tableName,
+		Key: map[string]types.AttributeValue{
+			"PollId": &types.AttributeValueMemberS{
+				Value: id,
+			},
+			"Discriminator": &types.AttributeValueMemberS{
+				Value: model.DiscriminatorResult,
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(item.Item) == 0 {
+		return nil, nil
+	}
+
+	result := &model.PollResult{}
+	err = attributevalue.UnmarshalMap(item.Item, result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

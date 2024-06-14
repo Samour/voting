@@ -2,6 +2,7 @@ package model
 
 const DiscriminatorPoll = "poll"
 const DiscriminatorVote = "vote:"
+const DiscriminatorResult = "result"
 
 type Poll struct {
 	PollId        string
@@ -32,5 +33,10 @@ type Vote struct {
 type PollResult struct {
 	PollId        string
 	Discriminator string
-	VoteCount     map[string]int
+	Votes         []OptionVoteCount
+}
+
+type OptionVoteCount struct {
+	Option    string
+	VoteCount int
 }
