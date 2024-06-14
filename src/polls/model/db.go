@@ -28,3 +28,9 @@ type Vote struct {
 	Option        int
 	CastAt        string
 }
+
+type PollResult struct {
+	PollId        string
+	Discriminator string
+	VoteCount     map[string]int
+}

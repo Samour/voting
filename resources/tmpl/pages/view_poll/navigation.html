@@ -1,6 +1,6 @@
 {{ if .OobStatusUpdate }}
 <span id="poll-status" hx-swap-oob="true">
-  {{ .Poll.Status }}
+  {{ .StatusLabel }}
 </span>
 {{ end }}
 {{ if eq .Poll.Status "draft" }}

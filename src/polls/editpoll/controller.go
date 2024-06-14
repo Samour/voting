@@ -55,7 +55,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	viewPollModel := viewpoll.ToViewPollModel(poll)
+	viewPollModel := viewpoll.ToViewPollModel(poll, nil)
 	err = viewPollRenderer.Render(w, "index.html", viewPollModel)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
