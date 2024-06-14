@@ -1,18 +1,19 @@
 {{ template "page_header.html" }}
 <h1>Edit Poll</h1>
+{{ if .MayEdit }}
 <div>
-  <form action="/polls/{{ .PollId }}/" method="POST">
+  <form action="/polls/{{ .Poll.PollId }}/" method="POST">
     <div class="row">
       <label for="poll-name">Name</label>
     </div>
     <div class="row">
       <div class="six columns">
-        <input id="poll-name" name="Name" class="u-full-width" value="{{ .Name }}" />
+        <input id="poll-name" name="Name" class="u-full-width" value="{{ .Poll.Name }}" />
       </div>
     </div>
     <h3>Poll Options</h3>
     <div id="poll-options">
-      {{ template "poll_options.html" . }}
+      {{ template "poll_options.html" .Poll }}
     </div>
     <div class="row">
       <div class="twelve columns">
@@ -24,9 +25,18 @@
     <div class="row normal-spacing">
       <div class="twelve columns">
         <button action="submit">Save</button>
-        <a href="/polls/{{ .PollId }}" class="button">Cancel</a>
+        <a href="/polls/{{ .Poll.PollId }}" class="button">Cancel</a>
       </div>
     </div>
   </form>
 </div>
+{{ else }}
+<h3 class="error">This poll cannot be edited</h3>
+<div class="row">
+  <div class="twelve columns">
+    <a href="/polls/{{ .Poll.PollId }}">Return</a>
+    <a href="/" class="u-pull-right">Home</a>
+  </div>
+</div>
+{{ end }}
 {{ template "page_footer.html" }}

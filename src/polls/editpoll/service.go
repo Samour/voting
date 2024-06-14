@@ -1,18 +1,25 @@
 package editpoll
 
 import (
+	"errors"
+
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 )
 
-type pollDetails struct {
-	Name    string
-	Options []string
-}
+func getPoll(id string) (*editPollModel, error) {
+	poll, err := repository.GetPollItem(id)
+	if err != nil {
+		return nil, err
+	}
+	if poll == nil {
+		return nil, nil
+	}
 
-type pollOptionsUpdate struct {
-	Add    bool
-	Remove int
+	return &editPollModel{
+		Poll:    poll,
+		MayEdit: poll.Status == "draft",
+	}, nil
 }
 
 func updatePollDetails(id string, d pollDetails) (*model.Poll, error) {
@@ -24,7 +31,9 @@ func updatePollDetails(id string, d pollDetails) (*model.Poll, error) {
 		return nil, nil
 	}
 
-	// TODO handle poll that is not in draft
+	if poll.Status != "draft" {
+		return nil, errors.New("cannot edit poll that is not in draft status")
+	}
 
 	poll.Name = d.Name
 	poll.Options = d.Options

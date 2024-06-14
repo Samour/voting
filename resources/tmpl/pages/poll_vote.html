@@ -1,4 +1,5 @@
 {{ template "page_header.html" }}
+{{ if .MayVote }}
 {{ $voted := .Voted }}
 <h1>{{ .Poll.Name }}</h1>
 <form method="post">
@@ -24,3 +25,12 @@
   </div>
 </form>
 {{ template "page_footer.html" }}
+{{ else }}
+<h3 class="error">Voting on this poll is not open</h3>
+<div class="row">
+  <div class="twelve columns">
+    <a href="/polls/{{ .Poll.PollId }}">Return</a>
+    <a href="/" class="u-pull-right">Home</a>
+  </div>
+</div>
+{{ end }}

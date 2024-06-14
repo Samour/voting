@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/polls/viewpoll"
 	"github.com/Samour/voting/render"
 )
@@ -14,7 +13,7 @@ var viewPollRenderer = render.Must(render.CreateRenderer("pages/view_poll/*.html
 
 func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	poll, err := repository.GetPollItem(pollId)
+	poll, err := getPoll(pollId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
