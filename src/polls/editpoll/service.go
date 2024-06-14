@@ -5,6 +5,7 @@ import (
 
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
+	"github.com/Samour/voting/polls/viewpoll"
 )
 
 func getPoll(id string) (*editPollModel, error) {
@@ -22,7 +23,7 @@ func getPoll(id string) (*editPollModel, error) {
 	}, nil
 }
 
-func updatePollDetails(id string, d pollDetails) (*model.Poll, error) {
+func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
 	poll, err := repository.GetPollItem(id)
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func updatePollDetails(id string, d pollDetails) (*model.Poll, error) {
 		return nil, err
 	}
 
-	return poll, nil
+	return viewpoll.ToViewPollModel(poll, nil), nil
 }
 
 func patchPollOptions(options []string, u pollOptionsUpdate) []string {
