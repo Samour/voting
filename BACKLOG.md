@@ -1,6 +1,5 @@
 # Backlog
 
-- Display poll results
 - Select poll type during creation
 - Cast a ranked-choice vote
 - Tally ranked-choice poll result
