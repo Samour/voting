@@ -1,14 +1,5 @@
 {{ $voted := .Voted }}
-{{ if .ErrorString }}
-<div class="row">
-  <div class="two columns">&nbsp</div>
-  <div class="eight columns">
-    <div class="error-alert">
-      {{ .ErrorString }}
-    </div>
-  </div>
-</div>
-{{ end }}
+{{ template "error_panel.html" .ErrorString }}
 <div class="row">
   <ol>
     {{ range $i, $_ := .Poll.Options }}
