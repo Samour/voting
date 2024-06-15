@@ -12,6 +12,11 @@ import (
 
 var tableName = "polls"
 
+type Paged[D any] struct {
+	Items            []D
+	LastEvaluatedKey *string
+}
+
 func InsertNewPollItem(p *model.Poll) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)
@@ -149,6 +154,61 @@ func RecordVote(v *model.Vote) error {
 	return err
 }
 
+func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.Vote], error) {
+	client := clients.DynamoDb()
+
+	var esk map[string]types.AttributeValue = nil
+	if exclusiveStartKey != nil {
+		esk = map[string]types.AttributeValue{
+			"PollId": &types.AttributeValueMemberS{
+				Value: id,
+			},
+			"Discriminator": &types.AttributeValueMemberS{
+				Value: *exclusiveStartKey,
+			},
+		}
+	}
+
+	keyConditionExpression := "PollId = :poll_id and begins_with(Discriminator, :discriminator)"
+	items, err := client.Query(context.Background(), &dynamodb.QueryInput{
+		TableName:              &tableName,
+		KeyConditionExpression: &keyConditionExpression,
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":poll_id": &types.AttributeValueMemberS{
+				Value: id,
+			},
+			":discriminator": &types.AttributeValueMemberS{
+				Value: model.DiscriminatorVote,
+			},
+		},
+		ExclusiveStartKey: esk,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]model.Vote, items.Count)
+	err = attributevalue.UnmarshalListOfMaps(items.Items, &results)
+	if err != nil {
+		return nil, err
+	}
+
+	var lastEvaluatedKey *string = nil
+	if items.LastEvaluatedKey != nil {
+		lastVote := &model.Vote{}
+		err := attributevalue.UnmarshalMap(items.LastEvaluatedKey, lastVote)
+		if err != nil {
+			return nil, err
+		}
+		lastEvaluatedKey = &lastVote.Discriminator
+	}
+
+	return &Paged[model.Vote]{
+		Items:            results,
+		LastEvaluatedKey: lastEvaluatedKey,
+	}, nil
+}
+
 func GetPollResultItem(id string) (*model.PollResult, error) {
 	client := clients.DynamoDb()
 
@@ -178,4 +238,21 @@ func GetPollResultItem(id string) (*model.PollResult, error) {
 	}
 
 	return result, nil
+}
+
+func InsertNewPollResultItem(r *model.PollResult) error {
+	client := clients.DynamoDb()
+	item, err := attributevalue.MarshalMap(r)
+	if err != nil {
+		return err
+	}
+
+	condition := "attribute_not_exists(PollId)"
+	_, err = client.PutItem(context.Background(), &dynamodb.PutItemInput{
+		TableName:           &tableName,
+		Item:                item,
+		ConditionExpression: &condition,
+	})
+
+	return err
 }

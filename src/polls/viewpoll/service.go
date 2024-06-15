@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Samour/voting/polls/countvotes"
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 )
@@ -12,6 +13,9 @@ func getPoll(id string) (*model.ViewPollModel, error) {
 	poll, err := repository.GetPollItem(id)
 	if err != nil {
 		return nil, err
+	}
+	if poll == nil {
+		return nil, nil
 	}
 
 	pollResult, err := repository.GetPollResultItem(id)
@@ -45,6 +49,7 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 		return nil, nil
 	}
 
+	startVoteCounting := false
 	if status == model.PollStatusVoting {
 		if poll.Status != model.PollStatusDraft {
 			return nil, errors.New("cannot open voting on poll")
@@ -55,6 +60,7 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 			return nil, errors.New("voting is not currently open on poll")
 		}
 		poll.Statistics.ClosedAt = time.Now().In(time.UTC).Format(time.RFC3339)
+		startVoteCounting = true
 	} else {
 		return nil, errors.New("unknown status")
 	}
@@ -63,6 +69,10 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 	err = repository.UpdatePollItem(poll)
 	if err != nil {
 		return nil, err
+	}
+
+	if startVoteCounting {
+		go countvotes.CountVotes(id)
 	}
 
 	model := ToViewPollModel(poll, nil)
