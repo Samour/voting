@@ -80,6 +80,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		remove, err = strconv.Atoi(r.PostForm.Get("Remove"))
 		if err != nil {
 			render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 	}
 

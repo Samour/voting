@@ -56,3 +56,29 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
+func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
+	pollId := r.PathValue("id")
+	err := r.ParseForm()
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	selected, err := strconv.Atoi(r.PostForm.Get("Select"))
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	poll, err := selectRankedChoiceOption(pollId, selected)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = renderer.Render(w, "rankedchoice.html", poll)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+	}
+}

@@ -74,3 +74,58 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 		Voted:   option,
 	}, nil
 }
+
+func selectRankedChoiceOption(pollId string, option int) (*castVoteModel, error) {
+	poll, err := repository.GetPollItem(pollId)
+	if err != nil {
+		return nil, err
+	}
+
+	selected, err := constructVoteOptionsList(poll, []int{option})
+	unselected := constructVoteOptionsListWithout(poll, []int{option})
+
+	return &castVoteModel{
+		Poll: poll,
+		Rco: &rankedChoiceOptions{
+			Selected:   selected,
+			Unselected: unselected,
+		},
+		MayVote: true,
+		Voted:   -1,
+	}, nil
+}
+
+func constructVoteOptionsList(poll *model.Poll, options []int) ([]voteOption, error) {
+	list := make([]voteOption, len(options))
+	for i, o := range options {
+		if o < 0 || o >= len(poll.Options) {
+			return nil, errors.New("option value out of range")
+		}
+
+		list[i] = voteOption{
+			Index:  o,
+			Option: poll.Options[o],
+		}
+	}
+
+	return list, nil
+}
+
+func constructVoteOptionsListWithout(poll *model.Poll, options []int) []voteOption {
+	list := make([]voteOption, 0)
+OPTIONS:
+	for i, o := range poll.Options {
+		for _, ex := range options {
+			if i == ex {
+				continue OPTIONS
+			}
+		}
+
+		list = append(list, voteOption{
+			Index:  i,
+			Option: o,
+		})
+	}
+
+	return list
+}
