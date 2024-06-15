@@ -1,12 +1,17 @@
+{{ if .RenderFullPage }}
 {{ template "page_header.html" }}
-<h1>{{ .Poll.Name }}</h1>
-<div class="row">
-  <div class="twelve columns">
-    <strong>Status:</strong> <span id="poll-status">{{ .StatusLabel }}</span>
+{{ end }}
+<div id="page" {{ if .PollForUpdate }}hx-get="/polls/{{ .Poll.PollId }}" hx-swap="outerHTML" hx-trigger="every 1s" {{
+  end }}>
+  <h1>{{ .Poll.Name }}</h1>
+  <div class="row">
+    <div class="twelve columns">
+      <strong>Status:</strong> <span id="poll-status">{{ .StatusLabel }}</span>
+    </div>
   </div>
-</div>
-{{ template "options.html" . }}
-<div id="poll-navigation">
+  {{ template "options.html" . }}
   {{ template "navigation.html" . }}
 </div>
+{{ if .RenderFullPage }}
 {{ template "page_footer.html" }}
+{{ end }}

@@ -28,16 +28,19 @@ func getPoll(id string) (*model.ViewPollModel, error) {
 
 func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 	statusLabel := p.Status
+	pollForUpdate := false
 	if p.Status == model.PollStatusClosed && r == nil {
 		statusLabel = "closed; vote count pending"
+		pollForUpdate = true
 	}
 
 	return &model.ViewPollModel{
-		Poll:            p,
-		Result:          r,
-		StatusLabel:     statusLabel,
-		RenderResult:    r != nil,
-		OobStatusUpdate: false,
+		Poll:           p,
+		Result:         r,
+		StatusLabel:    statusLabel,
+		RenderResult:   r != nil,
+		PollForUpdate:  pollForUpdate,
+		RenderFullPage: true,
 	}
 }
 
@@ -77,6 +80,5 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 	}
 
 	model := ToViewPollModel(poll, nil)
-	model.OobStatusUpdate = true
 	return model, nil
 }

@@ -2,6 +2,7 @@ package viewpoll
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Samour/voting/render"
 )
@@ -10,6 +11,8 @@ var renderer = render.Must(render.CreateRenderer("pages/view_poll/*.html"))
 
 func ServeViewPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
+	isHxRequest := strings.ToLower(r.Header.Get("HX-Request")) == "true"
+
 	poll, err := getPoll(pollId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
@@ -20,6 +23,7 @@ func ServeViewPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	poll.RenderFullPage = !isHxRequest
 	err = renderer.Render(w, "index.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
@@ -41,7 +45,8 @@ func HandlePollStatusChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderer.Render(w, "navigation.html", poll)
+	poll.RenderFullPage = false
+	err = renderer.Render(w, "index.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
