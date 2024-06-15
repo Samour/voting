@@ -54,7 +54,13 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 	}
 
 	if option < 0 || option >= len(poll.Options) {
-		return nil, errors.New("invalid option provided")
+		errorMsg := "You must select an option to vote for"
+		return &castVoteModel{
+			Poll:        poll,
+			MayVote:     true,
+			Voted:       -1,
+			ErrorString: &errorMsg,
+		}, nil
 	}
 
 	voteId := utils.IdGen()

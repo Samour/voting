@@ -43,10 +43,10 @@ func ServeCastFptpVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	option, err := strconv.Atoi(r.PostForm.Get("Option"))
+	option := -1
+	option, err = strconv.Atoi(r.PostForm.Get("Option"))
 	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
-		return
+		option = -1
 	}
 
 	poll, err := castVote(pollId, option)

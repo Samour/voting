@@ -8,10 +8,11 @@ type rankedChoiceUpdate struct {
 }
 
 type castVoteModel struct {
-	Poll    *model.Poll
-	Rco     *rankedChoiceOptions
-	MayVote bool
-	Voted   int
+	Poll        *model.Poll
+	Rco         *rankedChoiceOptions
+	MayVote     bool
+	Voted       int
+	ErrorString *string
 }
 
 type rankedChoiceOptions struct {

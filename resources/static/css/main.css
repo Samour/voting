@@ -16,3 +16,10 @@
 .error {
   color: red;
 }
+
+.error-alert {
+  background: #dd0000;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 3px;
+}
