@@ -8,26 +8,6 @@ import (
 )
 
 func CountVotes(pollId string) {
-	voteCounts := make(map[int]int, 0)
-	var continuation *string = nil
-
-	for {
-		page, err := repository.GetPollVoteItems(pollId, continuation)
-		if err != nil {
-			log.Printf("failed fetching vote items: %s\n", err.Error())
-			return
-		}
-
-		for _, vote := range page.Items {
-			voteCounts[vote.Option] = voteCounts[vote.Option] + 1
-		}
-
-		continuation = page.LastEvaluatedKey
-		if continuation == nil {
-			break
-		}
-	}
-
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
@@ -35,21 +15,9 @@ func CountVotes(pollId string) {
 		return
 	}
 
-	counts := make([]model.OptionVoteCount, len(poll.Options))
-	for i, o := range poll.Options {
-		counts[i] = model.OptionVoteCount{
-			Option:    o,
-			VoteCount: voteCounts[i],
-		}
-	}
-
-	result := &model.PollResult{
-		PollId:        pollId,
-		Discriminator: model.DiscriminatorResult,
-		Votes:         counts,
-	}
-	err = repository.InsertNewPollItem(result)
-	if err != nil {
-		log.Printf("failed to insert poll result: %s\n", err.Error())
+	if poll.AggregationType == model.PollAggregationTypeFirstPastThePost {
+		countFptp(poll)
+	} else if poll.AggregationType == model.PollAggregationTypeRankedChoice {
+		countRankedChoice(poll)
 	}
 }
