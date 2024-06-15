@@ -5,17 +5,21 @@ const DiscriminatorVote = "vote:"
 const DiscriminatorResult = "result"
 
 type Poll struct {
-	PollId        string
-	Discriminator string
-	Status        string
-	Name          string
-	Options       []string
-	Statistics    VotingStatistics
+	PollId          string
+	Discriminator   string
+	Status          string
+	AggregationType string
+	Name            string
+	Options         []string
+	Statistics      VotingStatistics
 }
 
 const PollStatusDraft = "draft"
 const PollStatusVoting = "voting"
 const PollStatusClosed = "closed"
+
+const PollAggregationTypeFirstPastThePost = "fptp"
+const PollAggregationTypeRankedChoice = "rankedchoice"
 
 type VotingStatistics struct {
 	OpenedAt string

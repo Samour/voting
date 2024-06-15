@@ -39,11 +39,13 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := r.PostForm.Get("Name")
+	aggregationType := r.PostForm.Get("AggregationType")
 	options := r.PostForm["Options[]"]
 
 	poll, err := updatePollDetails(pollId, pollDetails{
-		Name:    name,
-		Options: options,
+		Name:            name,
+		AggregationType: aggregationType,
+		Options:         options,
 	})
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)

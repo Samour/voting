@@ -11,6 +11,13 @@
         <input id="poll-name" name="Name" class="u-full-width" value="{{ .Poll.Name }}" />
       </div>
     </div>
+    <h3>Poll Type</h3>
+    <select name="AggregationType">
+      <option value="fptp" {{ if eq .Poll.AggregationType "fptp" }}selected{{ end }}>First past the post</option>
+      <option value="rankedchoice" {{ if eq .Poll.AggregationType "rankedchoice" }}selected{{ end }}>
+        Ranked choice
+      </option>
+    </select>
     <h3>Poll Options</h3>
     <div id="poll-options">
       {{ template "poll_options.html" .Poll }}

@@ -1,6 +1,5 @@
 # Backlog
 
-- Select poll type during creation
 - Cast a ranked-choice vote
 - Tally ranked-choice poll result
 - Sign up user account (username/password)

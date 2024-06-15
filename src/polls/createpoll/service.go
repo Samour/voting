@@ -9,11 +9,12 @@ import (
 func createPoll() (*string, error) {
 	id := utils.IdGen()
 	poll := model.Poll{
-		PollId:        id,
-		Discriminator: model.DiscriminatorPoll,
-		Status:        model.PollStatusDraft,
-		Name:          "",
-		Options:       []string{""},
+		PollId:          id,
+		Discriminator:   model.DiscriminatorPoll,
+		Status:          model.PollStatusDraft,
+		AggregationType: model.PollAggregationTypeFirstPastThePost,
+		Name:            "",
+		Options:         []string{""},
 	}
 
 	err := repository.InsertNewPollItem(&poll)

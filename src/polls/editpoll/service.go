@@ -37,6 +37,7 @@ func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
 	}
 
 	poll.Name = d.Name
+	poll.AggregationType = d.AggregationType
 	poll.Options = d.Options
 	err = repository.UpdatePollItem(poll)
 	if err != nil {

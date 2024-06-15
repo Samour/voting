@@ -34,13 +34,21 @@ func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 		pollForUpdate = true
 	}
 
+	aggregationTypeLabel := ""
+	if p.AggregationType == model.PollAggregationTypeFirstPastThePost {
+		aggregationTypeLabel = "First past the post"
+	} else if p.AggregationType == model.PollAggregationTypeRankedChoice {
+		aggregationTypeLabel = "Ranked choice"
+	}
+
 	return &model.ViewPollModel{
-		Poll:           p,
-		Result:         r,
-		StatusLabel:    statusLabel,
-		RenderResult:   r != nil,
-		PollForUpdate:  pollForUpdate,
-		RenderFullPage: true,
+		Poll:                 p,
+		Result:               r,
+		StatusLabel:          statusLabel,
+		AggregationTypeLabel: aggregationTypeLabel,
+		RenderResult:         r != nil,
+		PollForUpdate:        pollForUpdate,
+		RenderFullPage:       true,
 	}
 }
 

@@ -8,8 +8,9 @@ type editPollModel struct {
 }
 
 type pollDetails struct {
-	Name    string
-	Options []string
+	Name            string
+	AggregationType string
+	Options         []string
 }
 
 type pollOptionsUpdate struct {
