@@ -108,6 +108,33 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
+	pollId := r.PathValue("id")
+
+	err := r.ParseForm()
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ranked, err := extractSelectedArray(&r.PostForm)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	poll, err := castRankedChoiceVote(pollId, ranked)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = renderer.Render(w, "vote_form.html", poll)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func extractSelectedArray(v *url.Values) ([]int, error) {
 	r := make([]int, 0)
 	i := 0

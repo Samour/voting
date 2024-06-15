@@ -19,9 +19,10 @@ type PollControllers struct {
 	ServeSavePoll   func(http.ResponseWriter, *http.Request)
 	HandlePatchPoll func(http.ResponseWriter, *http.Request)
 
-	ServeVotePoll           func(http.ResponseWriter, *http.Request)
-	HandleCastFptpVote      func(http.ResponseWriter, *http.Request)
-	HandlePatchRankedChoice func(http.ResponseWriter, *http.Request)
+	ServeVotePoll              func(http.ResponseWriter, *http.Request)
+	HandleCastFptpVote         func(http.ResponseWriter, *http.Request)
+	HandlePatchRankedChoice    func(http.ResponseWriter, *http.Request)
+	HandleCastRankedChoiceVote func(http.ResponseWriter, *http.Request)
 }
 
 func CreatePollControllers() PollControllers {
@@ -35,8 +36,9 @@ func CreatePollControllers() PollControllers {
 		ServeSavePoll:   editpoll.ServeSavePoll,
 		HandlePatchPoll: editpoll.HandlePatchPoll,
 
-		ServeVotePoll:           castvote.ServeVotePoll,
-		HandleCastFptpVote:      castvote.HandleCastFptpVote,
-		HandlePatchRankedChoice: castvote.HandlePatchRankedChoice,
+		ServeVotePoll:              castvote.ServeVotePoll,
+		HandleCastFptpVote:         castvote.HandleCastFptpVote,
+		HandlePatchRankedChoice:    castvote.HandlePatchRankedChoice,
+		HandleCastRankedChoiceVote: castvote.HandleCastRankedChoiceVote,
 	}
 }

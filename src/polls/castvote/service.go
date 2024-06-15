@@ -54,6 +54,9 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 	if poll.Status != model.PollStatusVoting {
 		return nil, errors.New("poll is not open for voting")
 	}
+	if poll.AggregationType != model.PollAggregationTypeFirstPastThePost {
+		return nil, errors.New("incorrect vote type for poll")
+	}
 
 	if option < 0 || option >= len(poll.Options) {
 		errorMsg := "You must select an option to vote for"
@@ -126,6 +129,62 @@ func removeFromList(l []int, v int) []int {
 	}
 
 	return r
+}
+
+func castRankedChoiceVote(pollId string, ranked []int) (*castVoteModel, error) {
+	poll := &model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	if err != nil {
+		return nil, err
+	}
+	if len(poll.PollId) == 0 {
+		return nil, errors.New("poll does not exist")
+	}
+
+	if poll.Status != model.PollStatusVoting {
+		return nil, errors.New("poll is not open for voting")
+	}
+	if poll.AggregationType != model.PollAggregationTypeRankedChoice {
+		return nil, errors.New("incorrect vote type for poll")
+	}
+
+	selected, err := constructVoteOptionsList(poll, ranked)
+	if err != nil {
+		return nil, err
+	}
+	unselected := constructVoteOptionsListWithout(poll, ranked)
+
+	m := &castVoteModel{
+		Poll: poll,
+		Rco: &rankedChoiceOptions{
+			Selected:   selected,
+			Unselected: unselected,
+		},
+		MayVote: true,
+		Voted:   -1,
+	}
+
+	if len(unselected) > 0 {
+		errMsg := "All options must be selected"
+		m.ErrorString = &errMsg
+		return m, nil
+	}
+
+	voteId := utils.IdGen()
+	vote := model.RankedChoiceVote{
+		PollId:        pollId,
+		Discriminator: model.DiscriminatorPoll + voteId,
+		Ranked:        ranked,
+		CastAt:        time.Now().In(time.UTC).Format(time.RFC3339),
+	}
+
+	err = repository.InsertNewPollItem(vote)
+	if err != nil {
+		return nil, err
+	}
+
+	m.Voted = 1
+	return m, nil
 }
 
 func constructVoteOptionsList(poll *model.Poll, options []int) ([]voteOption, error) {

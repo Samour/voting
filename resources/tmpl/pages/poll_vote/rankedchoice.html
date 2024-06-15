@@ -1,5 +1,7 @@
+{{ $poll_id := .Poll.PollId }}
+{{ $may_vote := eq .Voted -1 }}
+{{ template "error_panel.html" .ErrorString }}
 <div id="ranked-choice-votes">
-  {{ $poll_id := .Poll.PollId }}
   <div class="row">
     <div class="twelve columns">
       <h3>Selected options</h3>
@@ -10,13 +12,16 @@
     <div class="twelve columns">
       {{ .Option }}
       <input type="hidden" name="Selected[{{ $i }}]" value="{{ .Index }}" />
+      {{ if $may_vote }}
       <button class="u-pull-right" hx-patch="/polls/{{ $poll_id }}/vote/rankedchoice/" hx-target="#ranked-choice-votes"
         hx-swap="outerHTML" name="Remove" value="{{ .Index }}">
         Remove
       </button>
+      {{ end }}
     </div>
   </div>
   {{ end }}
+  {{ if $may_vote }}
   <div class="row">
     <div class="twelve columns">
       <h3>Remaining options</h3>
@@ -32,5 +37,6 @@
       </button>
     </div>
   </div>
+  {{ end }}
   {{ end }}
 </div>

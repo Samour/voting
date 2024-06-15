@@ -33,6 +33,7 @@ func main() {
 	http.HandleFunc("GET /polls/{id}/vote/{$}", pollControllers.ServeVotePoll)
 	http.HandleFunc("POST /polls/{id}/vote/fptp/{$}", pollControllers.HandleCastFptpVote)
 	http.HandleFunc("PATCH /polls/{id}/vote/rankedchoice/{$}", pollControllers.HandlePatchRankedChoice)
+	http.HandleFunc("POST /polls/{id}/vote/rankedchoice/{$}", pollControllers.HandleCastRankedChoiceVote)
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
