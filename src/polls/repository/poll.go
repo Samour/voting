@@ -12,11 +12,6 @@ import (
 
 var tableName = "polls"
 
-type Paged[D any] struct {
-	Items            []D
-	LastEvaluatedKey *string
-}
-
 func InsertNewPollItem(p interface{}) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)

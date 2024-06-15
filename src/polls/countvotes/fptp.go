@@ -12,17 +12,17 @@ func countFptp(poll *model.Poll) {
 	var continuation *string = nil
 
 	for {
-		page, err := repository.GetPollVoteItems(poll.PollId, continuation)
+		votes := make([]model.FptpVote, 0)
+		continuation, err := repository.GetPollVoteItems(poll.PollId, continuation, &votes)
 		if err != nil {
 			log.Printf("failed fetching vote items: %s\n", err.Error())
 			return
 		}
 
-		for _, vote := range page.Items {
+		for _, vote := range votes {
 			voteCounts[vote.Option] = voteCounts[vote.Option] + 1
 		}
 
-		continuation = page.LastEvaluatedKey
 		if continuation == nil {
 			break
 		}

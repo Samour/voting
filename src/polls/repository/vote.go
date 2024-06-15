@@ -58,7 +58,7 @@ func RecordVote(v *model.FptpVote) error {
 	return err
 }
 
-func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.FptpVote], error) {
+func GetPollVoteItems(id string, exclusiveStartKey *string, out interface{}) (*string, error) {
 	client := clients.DynamoDb()
 
 	var esk map[string]types.AttributeValue = nil
@@ -91,24 +91,19 @@ func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.FptpVo
 		return nil, err
 	}
 
-	results := make([]model.FptpVote, items.Count)
-	err = attributevalue.UnmarshalListOfMaps(items.Items, &results)
+	err = attributevalue.UnmarshalListOfMaps(items.Items, out)
 	if err != nil {
 		return nil, err
 	}
 
-	var lastEvaluatedKey *string = nil
 	if items.LastEvaluatedKey != nil {
 		lastVote := &model.FptpVote{}
 		err := attributevalue.UnmarshalMap(items.LastEvaluatedKey, lastVote)
 		if err != nil {
 			return nil, err
 		}
-		lastEvaluatedKey = &lastVote.Discriminator
+		return &lastVote.Discriminator, nil
 	}
 
-	return &Paged[model.FptpVote]{
-		Items:            results,
-		LastEvaluatedKey: lastEvaluatedKey,
-	}, nil
+	return nil, nil
 }
