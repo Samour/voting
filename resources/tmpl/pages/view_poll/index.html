@@ -5,14 +5,7 @@
     <strong>Status:</strong> <span id="poll-status">{{ .StatusLabel }}</span>
   </div>
 </div>
-<h3>Poll options</h3>
-<div class="row">
-  <ol>
-    {{ range .Poll.Options }}
-    <li>{{ . }}</li>
-    {{ end }}
-  </ol>
-</div>
+{{ template "options.html" . }}
 <div id="poll-navigation">
   {{ template "navigation.html" . }}
 </div>

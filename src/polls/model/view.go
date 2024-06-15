@@ -2,7 +2,8 @@ package model
 
 type ViewPollModel struct {
 	Poll            *Poll
-	PollResult      *PollResult
+	Result          *PollResult
 	StatusLabel     string
+	RenderResult    bool
 	OobStatusUpdate bool
 }

@@ -34,8 +34,9 @@ func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 
 	return &model.ViewPollModel{
 		Poll:            p,
-		PollResult:      r,
+		Result:          r,
 		StatusLabel:     statusLabel,
+		RenderResult:    r != nil,
 		OobStatusUpdate: false,
 	}
 }
