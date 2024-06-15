@@ -19,7 +19,7 @@ func getPoll(id string) (*model.ViewPollModel, error) {
 		return nil, nil
 	}
 
-	pollResult := &model.PollResult{}
+	pollResult := &model.FptpPollResult{}
 	err = repository.GetPollItem(id, model.DiscriminatorResult, pollResult)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func getPoll(id string) (*model.ViewPollModel, error) {
 	return ToViewPollModel(poll, pollResult), nil
 }
 
-func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
+func ToViewPollModel(p *model.Poll, r *model.FptpPollResult) *model.ViewPollModel {
 	statusLabel := p.Status
 	pollForUpdate := false
 	if p.Status == model.PollStatusClosed && r == nil {
@@ -48,7 +48,7 @@ func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 
 	return &model.ViewPollModel{
 		Poll:                 p,
-		Result:               r,
+		FptpResult:           r,
 		StatusLabel:          statusLabel,
 		AggregationTypeLabel: aggregationTypeLabel,
 		RenderResult:         r != nil,

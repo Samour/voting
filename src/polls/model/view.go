@@ -2,7 +2,7 @@ package model
 
 type ViewPollModel struct {
 	Poll                 *Poll
-	Result               *PollResult
+	FptpResult           *FptpPollResult
 	StatusLabel          string
 	AggregationTypeLabel string
 	RenderResult         bool

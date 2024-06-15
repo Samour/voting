@@ -41,13 +41,24 @@ type RankedChoiceVote struct {
 	CastAt        string
 }
 
-type PollResult struct {
+type FptpPollResult struct {
 	PollId        string
 	Discriminator string
-	Votes         []OptionVoteCount
+	Votes         []FptpOptionVoteCount
 }
 
-type OptionVoteCount struct {
+type FptpOptionVoteCount struct {
 	Option    string
 	VoteCount int
+}
+
+type RankedChoicePollResult struct {
+	PollId        string
+	Discriminator string
+	Votes         []RankedChoiceOptionVoteCount
+}
+
+type RankedChoiceOptionVoteCount struct {
+	Option     string
+	RoundVotes []int
 }

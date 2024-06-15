@@ -28,15 +28,15 @@ func countFptp(poll *model.Poll) {
 		}
 	}
 
-	counts := make([]model.OptionVoteCount, len(poll.Options))
+	counts := make([]model.FptpOptionVoteCount, len(poll.Options))
 	for i, o := range poll.Options {
-		counts[i] = model.OptionVoteCount{
+		counts[i] = model.FptpOptionVoteCount{
 			Option:    o,
 			VoteCount: voteCounts[i],
 		}
 	}
 
-	result := &model.PollResult{
+	result := &model.FptpPollResult{
 		PollId:        poll.PollId,
 		Discriminator: model.DiscriminatorResult,
 		Votes:         counts,
