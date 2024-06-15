@@ -17,3 +17,4 @@
 - Run tests on push (if any tests are written)
 - Sign up via OAuth
 - View poll results in real-time (websocket)
+- Randomize order on voting screen

@@ -7,7 +7,7 @@ import (
 	"github.com/Samour/voting/render"
 )
 
-var renderer = render.Must(render.CreateRenderer("pages/poll_vote.html"))
+var renderer = render.Must(render.CreateRenderer("pages/poll_vote/*.html"))
 
 func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
@@ -21,7 +21,7 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderer.Render(w, "poll_vote.html", poll)
+	err = renderer.Render(w, "index.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -51,7 +51,7 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderer.Render(w, "poll_vote.html", poll)
+	err = renderer.Render(w, "index.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}

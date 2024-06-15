@@ -1,0 +1,15 @@
+{{ $voted := .Voted }}
+<div class="row">
+  <ol>
+    {{ range $i, $_ := .Poll.Options }}
+    {{ $index := plus $i 1 }}
+    <li>
+      <label style="display: inline;">
+        {{ . }}
+        <input type="radio" name="Option" value="{{ $i }}" {{ if eq $i $voted }} checked {{ end }} {{ if ne $voted -1 }}
+          disabled {{ end }} />
+      </label>
+    </li>
+    {{ end }}
+  </ol>
+</div>

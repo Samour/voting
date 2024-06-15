@@ -1,0 +1,13 @@
+<div class="row">
+  <div class="twelve columns">
+    <h3>Remaining options</h3>
+  </div>
+</div>
+{{ range .Rco.Unselected }}
+<div class="row">
+  <div class="twelve columns">
+    {{ .Option }}
+    <button class="u-pull-right" hx-patch="/test" name="Select" value="{{ .Index }}">Select</button>
+  </div>
+</div>
+{{ end }}

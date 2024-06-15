@@ -1,22 +1,12 @@
 {{ template "page_header.html" }}
 {{ if .MayVote }}
-{{ $voted := .Voted }}
 <h1>{{ .Poll.Name }}</h1>
 <form method="post">
-  <div class="row">
-    <ol>
-      {{ range $i, $_ := .Poll.Options }}
-      {{ $index := plus $i 1 }}
-      <li>
-        <label style="display: inline;">
-          {{ . }}
-          <input type="radio" name="Option" value="{{ $i }}" {{ if eq $i $voted }} checked {{ end }} {{ if ne $voted -1
-            }} disabled {{ end }} />
-        </label>
-      </li>
-      {{ end }}
-    </ol>
-  </div>
+  {{ if eq .Poll.AggregationType "fptp" }}
+  {{ template "fptp.html" . }}
+  {{ else if eq .Poll.AggregationType "rankedchoice" }}
+  {{ template "rankedchoice.html" . }}
+  {{ end }}
   <div class="row">
     {{ if eq .Voted -1 }}
     <button action="submit">Cast vote</button>
