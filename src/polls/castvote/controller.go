@@ -13,7 +13,18 @@ var renderer = render.Must(render.CreateRenderer("pages/poll_vote/*.html"))
 
 func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	poll, err := getPoll(pollId)
+	var voteId *string = nil
+	err := r.ParseForm()
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if r.Form.Has("id") {
+		v := r.Form.Get("id")
+		voteId = &v
+	}
+
+	poll, err := getPollVoteForm(pollId, voteId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -29,7 +40,7 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ServeCastVote(w http.ResponseWriter, r *http.Request) {
+func ServeCastFptpVote(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
@@ -43,20 +54,14 @@ func ServeCastVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	poll, err := castVote(pollId, option)
+	voteId, err := castVote(pollId, option)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if poll == nil {
-		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
 		return
 	}
 
-	err = renderer.Render(w, "index.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	redirect := fmt.Sprintf("/polls/%s/vote/?id=%s", pollId, *voteId)
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {

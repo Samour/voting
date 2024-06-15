@@ -1,7 +1,7 @@
 {{ template "page_header.html" }}
 {{ if .MayVote }}
 <h1>{{ .Poll.Name }}</h1>
-<form method="post">
+<form method="post" action="/polls/{{ .Poll.PollId }}/vote/{{ .Poll.AggregationType }}/">
   {{ if eq .Poll.AggregationType "fptp" }}
   {{ template "fptp.html" . }}
   {{ else if eq .Poll.AggregationType "rankedchoice" }}

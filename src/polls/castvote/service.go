@@ -9,8 +9,8 @@ import (
 	"github.com/Samour/voting/utils"
 )
 
-func getPoll(id string) (*castVoteModel, error) {
-	poll, err := repository.GetPollItem(id)
+func getPollVoteForm(pollId string, voteId *string) (*castVoteModel, error) {
+	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		return nil, err
 	}
@@ -32,18 +32,32 @@ func getPoll(id string) (*castVoteModel, error) {
 		}
 	}
 
+	voted := -1
+	if voteId != nil {
+		vote, err := repository.GetPollVoteItem(pollId, *voteId)
+		if err != nil {
+			return nil, err
+		}
+		if vote != nil {
+			voted = vote.Option
+		}
+	}
+
 	return &castVoteModel{
 		Poll:    poll,
 		Rco:     rco,
 		MayVote: poll.Status == model.PollStatusVoting,
-		Voted:   -1,
+		Voted:   voted,
 	}, nil
 }
 
-func castVote(pollId string, option int) (*castVoteModel, error) {
+func castVote(pollId string, option int) (*string, error) {
 	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		return nil, err
+	}
+	if poll == nil {
+		return nil, errors.New("poll not found")
 	}
 
 	if poll.Status != model.PollStatusVoting {
@@ -68,11 +82,7 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 		return nil, err
 	}
 
-	return &castVoteModel{
-		Poll:    poll,
-		MayVote: true,
-		Voted:   option,
-	}, nil
+	return &voteId, nil
 }
 
 func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*castVoteModel, error) {
