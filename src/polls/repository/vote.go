@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func RecordVote(v *model.FptpVote) error {
+func RecordVote(pollId string, v interface{}) error {
 	client := clients.DynamoDb()
 
 	voteItem, err := attributevalue.MarshalMap(v)
@@ -36,7 +36,7 @@ func RecordVote(v *model.FptpVote) error {
 			TableName: &tableName,
 			Key: map[string]types.AttributeValue{
 				"PollId": &types.AttributeValueMemberS{
-					Value: v.PollId,
+					Value: pollId,
 				},
 				"Discriminator": &types.AttributeValueMemberS{
 					Value: model.DiscriminatorPoll,

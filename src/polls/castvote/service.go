@@ -77,7 +77,7 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 		CastAt:        time.Now().In(time.UTC).Format(time.RFC3339),
 	}
 
-	err = repository.RecordVote(&vote)
+	err = repository.RecordVote(pollId, &vote)
 	if err != nil {
 		return nil, err
 	}
@@ -173,12 +173,12 @@ func castRankedChoiceVote(pollId string, ranked []int) (*castVoteModel, error) {
 	voteId := utils.IdGen()
 	vote := model.RankedChoiceVote{
 		PollId:        pollId,
-		Discriminator: model.DiscriminatorPoll + voteId,
+		Discriminator: model.DiscriminatorVote + voteId,
 		Ranked:        ranked,
 		CastAt:        time.Now().In(time.UTC).Format(time.RFC3339),
 	}
 
-	err = repository.InsertNewPollItem(vote)
+	err = repository.RecordVote(pollId, &vote)
 	if err != nil {
 		return nil, err
 	}
