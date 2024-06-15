@@ -35,7 +35,7 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ServeCastFptpVote(w http.ResponseWriter, r *http.Request) {
+func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
@@ -49,7 +49,7 @@ func ServeCastFptpVote(w http.ResponseWriter, r *http.Request) {
 		option = -1
 	}
 
-	poll, err := castVote(pollId, option)
+	poll, err := castFptpVote(pollId, option)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return

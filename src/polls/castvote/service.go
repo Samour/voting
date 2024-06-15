@@ -40,7 +40,7 @@ func getPollVoteForm(pollId string) (*castVoteModel, error) {
 	}, nil
 }
 
-func castVote(pollId string, option int) (*castVoteModel, error) {
+func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		return nil, err
