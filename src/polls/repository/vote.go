@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func RecordVote(v *model.Vote) error {
+func RecordVote(v *model.FptpVote) error {
 	client := clients.DynamoDb()
 
 	voteItem, err := attributevalue.MarshalMap(v)
@@ -58,7 +58,7 @@ func RecordVote(v *model.Vote) error {
 	return err
 }
 
-func GetPollVoteItem(pollId string, voteId string) (*model.Vote, error) {
+func GetPollVoteItem(pollId string, voteId string) (*model.FptpVote, error) {
 	client := clients.DynamoDb()
 	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
 		TableName: &tableName,
@@ -79,7 +79,7 @@ func GetPollVoteItem(pollId string, voteId string) (*model.Vote, error) {
 		return nil, nil
 	}
 
-	vote := &model.Vote{}
+	vote := &model.FptpVote{}
 	err = attributevalue.UnmarshalMap(item.Item, vote)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func GetPollVoteItem(pollId string, voteId string) (*model.Vote, error) {
 	return vote, nil
 }
 
-func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.Vote], error) {
+func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.FptpVote], error) {
 	client := clients.DynamoDb()
 
 	var esk map[string]types.AttributeValue = nil
@@ -121,7 +121,7 @@ func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.Vote],
 		return nil, err
 	}
 
-	results := make([]model.Vote, items.Count)
+	results := make([]model.FptpVote, items.Count)
 	err = attributevalue.UnmarshalListOfMaps(items.Items, &results)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.Vote],
 
 	var lastEvaluatedKey *string = nil
 	if items.LastEvaluatedKey != nil {
-		lastVote := &model.Vote{}
+		lastVote := &model.FptpVote{}
 		err := attributevalue.UnmarshalMap(items.LastEvaluatedKey, lastVote)
 		if err != nil {
 			return nil, err
@@ -137,7 +137,7 @@ func GetPollVoteItems(id string, exclusiveStartKey *string) (*Paged[model.Vote],
 		lastEvaluatedKey = &lastVote.Discriminator
 	}
 
-	return &Paged[model.Vote]{
+	return &Paged[model.FptpVote]{
 		Items:            results,
 		LastEvaluatedKey: lastEvaluatedKey,
 	}, nil

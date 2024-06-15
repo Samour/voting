@@ -65,7 +65,7 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 
 	voteId := utils.IdGen()
 	discriminator := model.DiscriminatorVote + voteId
-	vote := model.Vote{
+	vote := model.FptpVote{
 		PollId:        pollId,
 		Discriminator: discriminator,
 		Option:        option,

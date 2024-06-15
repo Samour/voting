@@ -27,10 +27,17 @@ type VotingStatistics struct {
 	ClosedAt string
 }
 
-type Vote struct {
+type FptpVote struct {
 	PollId        string
 	Discriminator string
 	Option        int
+	CastAt        string
+}
+
+type RankedChoiceVote struct {
+	PollId        string
+	Discriminator string
+	Ranked        []int
 	CastAt        string
 }
 
