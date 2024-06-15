@@ -9,11 +9,12 @@ import (
 )
 
 func getPoll(id string) (*editPollModel, error) {
-	poll, err := repository.GetPollItem(id)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, nil
 	}
 
@@ -24,11 +25,12 @@ func getPoll(id string) (*editPollModel, error) {
 }
 
 func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
-	poll, err := repository.GetPollItem(id)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, nil
 	}
 

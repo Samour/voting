@@ -10,17 +10,22 @@ import (
 )
 
 func getPoll(id string) (*model.ViewPollModel, error) {
-	poll, err := repository.GetPollItem(id)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, nil
 	}
 
-	pollResult, err := repository.GetPollResultItem(id)
+	pollResult := &model.PollResult{}
+	err = repository.GetPollItem(id, model.DiscriminatorResult, pollResult)
 	if err != nil {
 		return nil, err
+	}
+	if len(pollResult.PollId) == 0 {
+		pollResult = nil
 	}
 
 	return ToViewPollModel(poll, pollResult), nil
@@ -53,11 +58,12 @@ func ToViewPollModel(p *model.Poll, r *model.PollResult) *model.ViewPollModel {
 }
 
 func updateStatus(id string, status string) (*model.ViewPollModel, error) {
-	poll, err := repository.GetPollItem(id)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, nil
 	}
 

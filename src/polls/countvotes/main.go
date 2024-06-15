@@ -28,7 +28,8 @@ func CountVotes(pollId string) {
 		}
 	}
 
-	poll, err := repository.GetPollItem(pollId)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
 		log.Printf("failed fetching poll: %s\n", err.Error())
 		return
@@ -47,7 +48,7 @@ func CountVotes(pollId string) {
 		Discriminator: model.DiscriminatorResult,
 		Votes:         counts,
 	}
-	err = repository.InsertNewPollResultItem(result)
+	err = repository.InsertNewPollItem(result)
 	if err != nil {
 		log.Printf("failed to insert poll result: %s\n", err.Error())
 	}

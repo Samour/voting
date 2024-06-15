@@ -10,11 +10,12 @@ import (
 )
 
 func getPollVoteForm(pollId string) (*castVoteModel, error) {
-	poll, err := repository.GetPollItem(pollId)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, nil
 	}
 
@@ -41,11 +42,12 @@ func getPollVoteForm(pollId string) (*castVoteModel, error) {
 }
 
 func castFptpVote(pollId string, option int) (*castVoteModel, error) {
-	poll, err := repository.GetPollItem(pollId)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}
-	if poll == nil {
+	if len(poll.PollId) == 0 {
 		return nil, errors.New("poll not found")
 	}
 
@@ -85,7 +87,8 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 }
 
 func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*castVoteModel, error) {
-	poll, err := repository.GetPollItem(pollId)
+	poll := &model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
 		return nil, err
 	}

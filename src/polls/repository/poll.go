@@ -17,7 +17,7 @@ type Paged[D any] struct {
 	LastEvaluatedKey *string
 }
 
-func InsertNewPollItem(p *model.Poll) error {
+func InsertNewPollItem(p interface{}) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {
@@ -34,7 +34,7 @@ func InsertNewPollItem(p *model.Poll) error {
 	return err
 }
 
-func GetPollItem(id string) (*model.Poll, error) {
+func GetPollItem(id string, discriminator string, p interface{}) error {
 	client := clients.DynamoDb()
 	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
 		TableName: &tableName,
@@ -43,25 +43,24 @@ func GetPollItem(id string) (*model.Poll, error) {
 				Value: id,
 			},
 			"Discriminator": &types.AttributeValueMemberS{
-				Value: model.DiscriminatorPoll,
+				Value: discriminator,
 			},
 		},
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if len(item.Item) == 0 {
-		return nil, nil
+		return nil
 	}
 
-	poll := &model.Poll{}
-	err = attributevalue.UnmarshalMap(item.Item, poll)
+	err = attributevalue.UnmarshalMap(item.Item, p)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return poll, nil
+	return nil
 }
 
 func UpdatePollItem(p *model.Poll) error {
