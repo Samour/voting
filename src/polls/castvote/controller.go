@@ -1,7 +1,9 @@
 package castvote
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/Samour/voting/render"
@@ -65,13 +67,19 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	selected, err := strconv.Atoi(r.PostForm.Get("Select"))
+	selected, err := extractSelectedArray(&r.PostForm)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	poll, err := selectRankedChoiceOption(pollId, selected)
+	newSelection, err := strconv.Atoi(r.PostForm.Get("Select"))
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	poll, err := selectRankedChoiceOption(pollId, selected, newSelection)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -80,5 +88,23 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 	err = renderer.Render(w, "rankedchoice.html", poll)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func extractSelectedArray(v *url.Values) ([]int, error) {
+	r := make([]int, 0)
+	i := 0
+	for {
+		key := fmt.Sprintf("Selected[%d]", i)
+		if !v.Has(key) {
+			return r, nil
+		}
+
+		value, err := strconv.Atoi(v.Get(key))
+		if err != nil {
+			return nil, err
+		}
+		r = append(r, value)
+		i++
 	}
 }

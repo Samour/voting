@@ -75,14 +75,18 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 	}, nil
 }
 
-func selectRankedChoiceOption(pollId string, option int) (*castVoteModel, error) {
+func selectRankedChoiceOption(pollId string, options []int, option int) (*castVoteModel, error) {
 	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		return nil, err
 	}
 
-	selected, err := constructVoteOptionsList(poll, []int{option})
-	unselected := constructVoteOptionsListWithout(poll, []int{option})
+	options = append(options, option)
+	selected, err := constructVoteOptionsList(poll, options)
+	if err != nil {
+		return nil, err
+	}
+	unselected := constructVoteOptionsListWithout(poll, options)
 
 	return &castVoteModel{
 		Poll: poll,

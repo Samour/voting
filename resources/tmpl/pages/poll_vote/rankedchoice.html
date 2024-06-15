@@ -5,7 +5,7 @@
       <h3>Selected options</h3>
     </div>
   </div>
-  {{ range $i := .Rco.Selected }}
+  {{ range $i, $_ := .Rco.Selected }}
   <div class="row">
     <div class="twelve columns">
       {{ .Option }}
