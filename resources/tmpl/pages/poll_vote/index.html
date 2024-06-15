@@ -1,20 +1,9 @@
 {{ template "page_header.html" }}
 {{ if .MayVote }}
 <h1>{{ .Poll.Name }}</h1>
-<form method="post" action="/polls/{{ .Poll.PollId }}/vote/{{ .Poll.AggregationType }}/">
-  {{ if eq .Poll.AggregationType "fptp" }}
-  {{ template "fptp.html" . }}
-  {{ else if eq .Poll.AggregationType "rankedchoice" }}
-  {{ template "rankedchoice.html" . }}
-  {{ end }}
-  <div class="row">
-    {{ if eq .Voted -1 }}
-    <button action="submit">Cast vote</button>
-    {{ end }}
-    <a href="/" class="u-pull-right">Home</a>
-  </div>
+<form hx-post="/polls/{{ .Poll.PollId }}/vote/{{ .Poll.AggregationType }}/">
+  {{ template "vote_form.html" . }}
 </form>
-{{ template "page_footer.html" }}
 {{ else }}
 <h3 class="error">Voting on this poll is not open</h3>
 <div class="row">
@@ -24,3 +13,4 @@
   </div>
 </div>
 {{ end }}
+{{ template "page_footer.html" }}

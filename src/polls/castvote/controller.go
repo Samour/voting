@@ -13,18 +13,13 @@ var renderer = render.Must(render.CreateRenderer("pages/poll_vote/*.html"))
 
 func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	var voteId *string = nil
 	err := r.ParseForm()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if r.Form.Has("id") {
-		v := r.Form.Get("id")
-		voteId = &v
-	}
 
-	poll, err := getPollVoteForm(pollId, voteId)
+	poll, err := getPollVoteForm(pollId)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -54,14 +49,16 @@ func ServeCastFptpVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	voteId, err := castVote(pollId, option)
+	poll, err := castVote(pollId, option)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	redirect := fmt.Sprintf("/polls/%s/vote/?id=%s", pollId, *voteId)
-	http.Redirect(w, r, redirect, http.StatusFound)
+	err = renderer.Render(w, "vote_form.html", poll)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {

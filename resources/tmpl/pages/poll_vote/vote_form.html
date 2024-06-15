@@ -1,0 +1,11 @@
+{{ if eq .Poll.AggregationType "fptp" }}
+{{ template "fptp.html" . }}
+{{ else if eq .Poll.AggregationType "rankedchoice" }}
+{{ template "rankedchoice.html" . }}
+{{ end }}
+<div class="row">
+  {{ if eq .Voted -1 }}
+  <button action="submit">Cast vote</button>
+  {{ end }}
+  <a href="/" class="u-pull-right">Home</a>
+</div>
