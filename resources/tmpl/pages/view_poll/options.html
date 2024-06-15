@@ -1,6 +1,6 @@
 <div id="options">
   {{ if .RenderResult }}
-  <h3>Poll options</h3>
+  <h3>Poll Result</h3>
   <div class="row">
     <ol>
       {{ range .Result.Votes}}
@@ -9,7 +9,7 @@
     </ol>
   </div>
   {{ else }}
-  <h3>Poll Result</h3>
+  <h3>Poll options</h3>
   <div class="row">
     <ol>
       {{ range .Poll.Options }}
