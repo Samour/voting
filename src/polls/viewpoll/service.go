@@ -79,6 +79,5 @@ func updateStatus(id string, status string) (*model.ViewPollModel, error) {
 		go countvotes.CountVotes(id)
 	}
 
-	model := ToViewPollModel(poll, nil)
-	return model, nil
+	return ToViewPollModel(poll, nil), nil
 }
