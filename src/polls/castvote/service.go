@@ -75,13 +75,19 @@ func castVote(pollId string, option int) (*castVoteModel, error) {
 	}, nil
 }
 
-func selectRankedChoiceOption(pollId string, options []int, option int) (*castVoteModel, error) {
+func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*castVoteModel, error) {
 	poll, err := repository.GetPollItem(pollId)
 	if err != nil {
 		return nil, err
 	}
 
-	options = append(options, option)
+	if u.Unselect >= 0 {
+		options = removeFromList(options, u.Unselect)
+	}
+	if u.Select >= 0 {
+		options = append(options, u.Select)
+	}
+
 	selected, err := constructVoteOptionsList(poll, options)
 	if err != nil {
 		return nil, err
@@ -97,6 +103,17 @@ func selectRankedChoiceOption(pollId string, options []int, option int) (*castVo
 		MayVote: true,
 		Voted:   -1,
 	}, nil
+}
+
+func removeFromList(l []int, v int) []int {
+	r := make([]int, 0)
+	for _, x := range l {
+		if x != v {
+			r = append(r, x)
+		}
+	}
+
+	return r
 }
 
 func constructVoteOptionsList(poll *model.Poll, options []int) ([]voteOption, error) {

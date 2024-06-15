@@ -73,13 +73,28 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSelection, err := strconv.Atoi(r.PostForm.Get("Select"))
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
-		return
+	newSelection := -1
+	if r.PostForm.Has("Select") {
+		newSelection, err = strconv.Atoi(r.PostForm.Get("Select"))
+		if err != nil {
+			render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
-	poll, err := selectRankedChoiceOption(pollId, selected, newSelection)
+	remove := -1
+	if r.PostForm.Has("Remove") {
+		remove, err = strconv.Atoi(r.PostForm.Get("Remove"))
+		if err != nil {
+			render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+
+	poll, err := updateRankedChoiceOption(pollId, selected, rankedChoiceUpdate{
+		Select:   newSelection,
+		Unselect: remove,
+	})
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
