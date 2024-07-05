@@ -1,7 +1,7 @@
 {{ template "page_header.html" }}
 <h1>Polls</h1>
 <ul>
-  {{ range . }}
+  {{ range .Polls }}
   <li>
     <a href="/polls/{{ .PollId }}/">{{ .Name }}</a>
   </li>

@@ -16,7 +16,9 @@ func ServeHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderer.Render(w, "home.html", polls)
+	err = renderer.Render(w, "home.html", &homeModel{
+		Polls: polls,
+	})
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 		return
