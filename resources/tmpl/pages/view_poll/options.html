@@ -3,7 +3,7 @@
   <h3>Poll Result</h3>
   <div class="row">
     <ol>
-      {{ range .FptpResult.Votes}}
+      {{ range .Result }}
       <li>{{ .Option }}: {{ .VoteCount }}</li>
       {{ end }}
     </ol>
@@ -12,7 +12,7 @@
   <h3>Poll options</h3>
   <div class="row">
     <ol>
-      {{ range .Poll.Options }}
+      {{ range .Options }}
       <li>{{ . }}</li>
       {{ end }}
     </ol>

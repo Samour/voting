@@ -46,14 +46,28 @@ func ToViewPollModel(p *model.Poll, r *model.FptpPollResult) *model.ViewPollMode
 		aggregationTypeLabel = "Ranked choice"
 	}
 
+	var result []model.FptpOptionVoteCount = nil
+	if r != nil {
+		result = r.Votes
+	}
+
 	return &model.ViewPollModel{
-		Poll:                 p,
-		FptpResult:           r,
+		RenderFullPage:       true,
+		PollForUpdate:        pollForUpdate,
+		PollId:               p.PollId,
+		PollName:             p.Name,
 		StatusLabel:          statusLabel,
 		AggregationTypeLabel: aggregationTypeLabel,
-		RenderResult:         r != nil,
-		PollForUpdate:        pollForUpdate,
-		RenderFullPage:       true,
+		OptionsModel: model.ViewPollOptionsModel{
+			RenderResult: r != nil,
+			Result:       result,
+			Options:      p.Options,
+		},
+		NavigationModel: model.ViewPollNavigationModel{
+			PollStatus: p.Status,
+			PollId:     p.PollId,
+			VotesCast:  p.Statistics.Votes,
+		},
 	}
 }
 
