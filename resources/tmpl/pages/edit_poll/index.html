@@ -2,25 +2,25 @@
 <h1>Edit Poll</h1>
 {{ if .MayEdit }}
 <div>
-  <form action="/polls/{{ .Poll.PollId }}/" method="POST">
+  <form action="/polls/{{ .PollId }}/" method="POST">
     <div class="row">
       <label for="poll-name">Name</label>
     </div>
     <div class="row">
       <div class="six columns">
-        <input id="poll-name" name="Name" class="u-full-width" value="{{ .Poll.Name }}" />
+        <input id="poll-name" name="Name" class="u-full-width" value="{{ .PollName }}" />
       </div>
     </div>
     <h3>Poll Type</h3>
     <select name="AggregationType">
-      <option value="fptp" {{ if eq .Poll.AggregationType "fptp" }}selected{{ end }}>First past the post</option>
-      <option value="rankedchoice" {{ if eq .Poll.AggregationType "rankedchoice" }}selected{{ end }}>
+      <option value="fptp" {{ if eq .PollAggregationType "fptp" }}selected{{ end }}>First past the post</option>
+      <option value="rankedchoice" {{ if eq .PollAggregationType "rankedchoice" }}selected{{ end }}>
         Ranked choice
       </option>
     </select>
     <h3>Poll Options</h3>
     <div id="poll-options">
-      {{ template "poll_options.html" .Poll }}
+      {{ template "poll_options.html" .OptionsModel }}
     </div>
     <div class="row">
       <div class="twelve columns">
@@ -32,7 +32,7 @@
     <div class="row normal-spacing">
       <div class="twelve columns">
         <button action="submit">Save</button>
-        <a href="/polls/{{ .Poll.PollId }}" class="button">Cancel</a>
+        <a href="/polls/{{ .PollId }}" class="button">Cancel</a>
       </div>
     </div>
   </form>
@@ -41,7 +41,7 @@
 <h3 class="error">This poll cannot be edited</h3>
 <div class="row">
   <div class="twelve columns">
-    <a href="/polls/{{ .Poll.PollId }}">Return</a>
+    <a href="/polls/{{ .PollId }}">Return</a>
     <a href="/" class="u-pull-right">Home</a>
   </div>
 </div>

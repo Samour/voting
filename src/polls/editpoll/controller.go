@@ -62,10 +62,6 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type optionsForm struct {
-	Options []string
-}
-
 func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -84,7 +80,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	options = patchPollOptions(options, pollOptionsUpdate{
+	updatedOptions := patchPollOptions(options, pollOptionsUpdate{
 		Add:    add,
 		Remove: remove,
 	})
@@ -93,9 +89,7 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = renderer.Render(w, "poll_options.html", optionsForm{
-		Options: options,
-	})
+	err = renderer.Render(w, "poll_options.html", updatedOptions)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
 	}

@@ -1,10 +1,15 @@
 package editpoll
 
-import "github.com/Samour/voting/polls/model"
-
 type editPollModel struct {
-	Poll    *model.Poll
-	MayEdit bool
+	PollId              string
+	PollName            string
+	PollAggregationType string
+	MayEdit             bool
+	OptionsModel        editPollOptionsModel
+}
+
+type editPollOptionsModel struct {
+	Options []string
 }
 
 type pollDetails struct {

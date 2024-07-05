@@ -19,8 +19,13 @@ func getPoll(id string) (*editPollModel, error) {
 	}
 
 	return &editPollModel{
-		Poll:    poll,
-		MayEdit: poll.Status == model.PollStatusDraft,
+		PollId:              poll.PollId,
+		PollName:            poll.Name,
+		PollAggregationType: poll.AggregationType,
+		MayEdit:             poll.Status == model.PollStatusDraft,
+		OptionsModel: editPollOptionsModel{
+			Options: poll.Options,
+		},
 	}, nil
 }
 
@@ -49,7 +54,7 @@ func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
 	return viewpoll.ToViewPollModel(poll, nil), nil
 }
 
-func patchPollOptions(options []string, u pollOptionsUpdate) []string {
+func patchPollOptions(options []string, u pollOptionsUpdate) editPollOptionsModel {
 	if u.Remove >= 0 && u.Remove < len(options) {
 		options = append(options[:u.Remove], options[u.Remove+1:]...)
 	}
@@ -57,5 +62,7 @@ func patchPollOptions(options []string, u pollOptionsUpdate) []string {
 		options = append(options, "")
 	}
 
-	return options
+	return editPollOptionsModel{
+		Options: options,
+	}
 }
