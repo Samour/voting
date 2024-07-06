@@ -15,9 +15,18 @@ type ViewPollModel struct {
 }
 
 type ViewPollOptionsModel struct {
-	RenderResult bool
-	Result       []FptpOptionVoteCount
-	Options      []string
+	RenderResult        bool
+	PollAggregationType string
+	Options             []string
+	FptpResultModel     ViewPollFptpResultModel
+	RcvResultModel      ViewPollRcvResultModel
+}
+
+type ViewPollFptpResultModel struct {
+	Result []FptpOptionVoteCount
+}
+
+type ViewPollRcvResultModel struct {
 }
 
 type ViewPollNavigationModel struct {

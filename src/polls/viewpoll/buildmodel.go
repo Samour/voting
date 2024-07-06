@@ -30,16 +30,28 @@ func BuildViewPollModel(p model.Poll, r *model.FptpPollResult, renderFullPage bo
 }
 
 func buildViewPollOptionsModel(p model.Poll, r *model.FptpPollResult) model.ViewPollOptionsModel {
+	return model.ViewPollOptionsModel{
+		RenderResult:        r != nil,
+		PollAggregationType: p.AggregationType,
+		Options:             p.Options,
+		FptpResultModel:     buildViewPollFptpResultModel(r),
+		RcvResultModel:      buildViewPollRcvResultModel(),
+	}
+}
+
+func buildViewPollFptpResultModel(r *model.FptpPollResult) model.ViewPollFptpResultModel {
 	var result []model.FptpOptionVoteCount = nil
 	if r != nil {
 		result = r.Votes
 	}
 
-	return model.ViewPollOptionsModel{
-		RenderResult: r != nil,
-		Result:       result,
-		Options:      p.Options,
+	return model.ViewPollFptpResultModel{
+		Result: result,
 	}
+}
+
+func buildViewPollRcvResultModel() model.ViewPollRcvResultModel {
+	return model.ViewPollRcvResultModel{}
 }
 
 func buildViewPollNavigationModel(p model.Poll) model.ViewPollNavigationModel {

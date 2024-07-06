@@ -2,11 +2,11 @@
   {{ if .RenderResult }}
   <h3>Poll Result</h3>
   <div class="row">
-    <ol>
-      {{ range .Result }}
-      <li>{{ .Option }}: {{ .VoteCount }}</li>
-      {{ end }}
-    </ol>
+    {{ if eq .PollAggregationType "fptp" }}
+    {{ template "fptp_result.html" .FptpResultModel }}
+    {{ else if eq .PollAggregationType "rankedchoice" }}
+    {{ template "rcv_result.html" .RcvResultModel }}
+    {{ end }}
   </div>
   {{ else }}
   <h3>Poll options</h3>
