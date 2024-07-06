@@ -10,17 +10,18 @@ import (
 var renderer = render.Must(render.CreateRenderer("pages/home.html"))
 
 func ServeHome(w http.ResponseWriter, r *http.Request) {
+	renderer.UsingTemplate(w, "home.html").Render(prepareHome())
+}
+
+func prepareHome() (render.HttpResponse, error) {
 	polls, err := getpolls.FetchAllPolls()
 	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
+		return render.HttpResponse{}, err
 	}
 
-	err = renderer.Render(w, "home.html", &homeModel{
-		Polls: polls,
-	})
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	return render.HttpResponse{
+		Model: homeModel{
+			Polls: polls,
+		},
+	}, nil
 }

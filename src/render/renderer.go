@@ -13,10 +13,22 @@ var tmplFunctions = template.FuncMap{
 	},
 }
 
+type HttpResponse struct {
+	HttpCode     int
+	ErrorMessage string
+	Model        any
+}
+
 type Renderer struct {
 	HotReload bool
 	globs     []string
 	tmpl      *template.Template
+}
+
+type RenderAction struct {
+	w        http.ResponseWriter
+	r        *Renderer
+	template string
 }
 
 func CreateRenderer(globs ...string) (*Renderer, error) {
@@ -60,6 +72,38 @@ func (r *Renderer) Render(w http.ResponseWriter, name string, model any) error {
 		return tmpl.ExecuteTemplate(w, name, model)
 	} else {
 		return r.tmpl.ExecuteTemplate(w, name, model)
+	}
+}
+
+func (r *Renderer) UsingTemplate(w http.ResponseWriter, name string) RenderAction {
+	return RenderAction{
+		w:        w,
+		r:        r,
+		template: name,
+	}
+}
+
+func (a RenderAction) Render(response HttpResponse, err error) {
+	if err != nil {
+		ErrorPage(a.w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(response.ErrorMessage) > 0 {
+		code := http.StatusBadRequest
+		if response.HttpCode != 0 {
+			code = response.HttpCode
+		}
+		ErrorPage(a.w, response.ErrorMessage, code)
+		return
+	}
+
+	if response.HttpCode != 0 {
+		a.w.WriteHeader(response.HttpCode)
+	}
+	err = a.r.Render(a.w, a.template, response.Model)
+	if err != nil {
+		ErrorPage(a.w, err.Error(), 0)
 	}
 }
 

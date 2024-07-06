@@ -2,36 +2,43 @@ package viewpoll
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/Samour/voting/polls/countvotes"
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
+	"github.com/Samour/voting/render"
 )
 
-func getPoll(id string) (*model.ViewPollModel, error) {
+func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, nil
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
 	pollResult := &model.FptpPollResult{}
 	err = repository.GetPollItem(id, model.DiscriminatorResult, pollResult)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(pollResult.PollId) == 0 {
 		pollResult = nil
 	}
 
-	return ToViewPollModel(poll, pollResult), nil
+	return render.HttpResponse{
+		Model: ToViewPollModel(poll, pollResult, renderFullPage),
+	}, nil
 }
 
-func ToViewPollModel(p *model.Poll, r *model.FptpPollResult) *model.ViewPollModel {
+func ToViewPollModel(p *model.Poll, r *model.FptpPollResult, renderFullPage bool) *model.ViewPollModel {
 	statusLabel := p.Status
 	pollForUpdate := false
 	if p.Status == model.PollStatusClosed && r == nil {
@@ -52,7 +59,7 @@ func ToViewPollModel(p *model.Poll, r *model.FptpPollResult) *model.ViewPollMode
 	}
 
 	return &model.ViewPollModel{
-		RenderFullPage:       true,
+		RenderFullPage:       renderFullPage,
 		PollForUpdate:        pollForUpdate,
 		PollId:               p.PollId,
 		PollName:             p.Name,
@@ -71,41 +78,52 @@ func ToViewPollModel(p *model.Poll, r *model.FptpPollResult) *model.ViewPollMode
 	}
 }
 
-func updateStatus(id string, status string) (*model.ViewPollModel, error) {
+func updateStatus(id string, status string) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, nil
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
 	startVoteCounting := false
 	if status == model.PollStatusVoting {
 		if poll.Status != model.PollStatusDraft {
-			return nil, errors.New("cannot open voting on poll")
+			return render.HttpResponse{
+				HttpCode:     http.StatusBadRequest,
+				ErrorMessage: "Cannot open voting on poll",
+			}, nil
 		}
 		poll.Statistics.OpenedAt = time.Now().In(time.UTC).Format(time.RFC3339)
 	} else if status == model.PollStatusClosed {
 		if poll.Status != model.PollStatusVoting {
-			return nil, errors.New("voting is not currently open on poll")
+			return render.HttpResponse{
+				HttpCode:     http.StatusBadRequest,
+				ErrorMessage: "Voting is not currently open on poll",
+			}, nil
 		}
 		poll.Statistics.ClosedAt = time.Now().In(time.UTC).Format(time.RFC3339)
 		startVoteCounting = true
 	} else {
-		return nil, errors.New("unknown status")
+		return render.HttpResponse{}, errors.New("unknown status")
 	}
 
 	poll.Status = status
 	err = repository.UpdatePollItem(poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 
 	if startVoteCounting {
 		go countvotes.CountVotes(id)
 	}
 
-	return ToViewPollModel(poll, nil), nil
+	return render.HttpResponse{
+		Model: ToViewPollModel(poll, nil, false),
+	}, nil
 }

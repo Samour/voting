@@ -19,20 +19,7 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	poll, err := getPollVoteForm(pollId)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if poll == nil {
-		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
-		return
-	}
-
-	err = renderer.Render(w, "index.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "index.html").Render(getPollVoteForm(pollId))
 }
 
 func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {
@@ -49,16 +36,7 @@ func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {
 		option = -1
 	}
 
-	poll, err := castFptpVote(pollId, option)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = renderer.Render(w, "vote_form.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "vote_form.html").Render(castFptpVote(pollId, option))
 }
 
 func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
@@ -93,19 +71,11 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	poll, err := updateRankedChoiceOption(pollId, selected, rankedChoiceUpdate{
-		Select:   newSelection,
-		Unselect: remove,
-	})
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = renderer.Render(w, "rankedchoice.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "rankedchoice.html").Render(
+		updateRankedChoiceOption(pollId, selected, rankedChoiceUpdate{
+			Select:   newSelection,
+			Unselect: remove,
+		}))
 }
 
 func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
@@ -123,16 +93,7 @@ func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	poll, err := castRankedChoiceVote(pollId, ranked)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = renderer.Render(w, "vote_form.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "vote_form.html").Render(castRankedChoiceVote(pollId, ranked))
 }
 
 func extractSelectedArray(v *url.Values) ([]int, error) {

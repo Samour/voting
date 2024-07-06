@@ -2,21 +2,26 @@ package castvote
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
+	"github.com/Samour/voting/render"
 	"github.com/Samour/voting/utils"
 )
 
-func getPollVoteForm(pollId string) (*castVoteModel, error) {
+func getPollVoteForm(pollId string) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, nil
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
 	var fptpModel *fptpVoteModel = nil
@@ -43,43 +48,56 @@ func getPollVoteForm(pollId string) (*castVoteModel, error) {
 		}
 	}
 
-	return &castVoteModel{
-		MayVote:             poll.Status == model.PollStatusVoting,
-		PollId:              poll.PollId,
-		PollName:            poll.Name,
-		PollAggregationType: poll.AggregationType,
-		VoteFormModel: voteFormModel{
-			Voted:                 -1,
-			FptpVoteModel:         fptpModel,
-			RankedChoiceVoteModel: rcvModel,
+	return render.HttpResponse{
+		Model: castVoteModel{
+			MayVote:             poll.Status == model.PollStatusVoting,
+			PollId:              poll.PollId,
+			PollName:            poll.Name,
+			PollAggregationType: poll.AggregationType,
+			VoteFormModel: voteFormModel{
+				Voted:                 -1,
+				FptpVoteModel:         fptpModel,
+				RankedChoiceVoteModel: rcvModel,
+			},
 		},
 	}, nil
 }
 
-func castFptpVote(pollId string, option int) (*voteFormModel, error) {
+func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, errors.New("poll not found")
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
 	if poll.Status != model.PollStatusVoting {
-		return nil, errors.New("poll is not open for voting")
+		return render.HttpResponse{
+			HttpCode:     http.StatusBadRequest,
+			ErrorMessage: "Poll is not open for voting",
+		}, nil
 	}
 	if poll.AggregationType != model.PollAggregationTypeFirstPastThePost {
-		return nil, errors.New("incorrect vote type for poll")
+		return render.HttpResponse{
+			HttpCode:     http.StatusBadRequest,
+			ErrorMessage: "Incorrect vote type for poll",
+		}, nil
 	}
 
 	if option < 0 || option >= len(poll.Options) {
-		return &voteFormModel{
-			Voted: -1,
-			FptpVoteModel: &fptpVoteModel{
-				Voted:        -1,
-				ErrorMessage: "You must select an option to vote for",
-				PollOptions:  poll.Options,
+		return render.HttpResponse{
+			Model: voteFormModel{
+				Voted: -1,
+				FptpVoteModel: &fptpVoteModel{
+					Voted:        -1,
+					ErrorMessage: "You must select an option to vote for",
+					PollOptions:  poll.Options,
+				},
 			},
 		}, nil
 	}
@@ -95,23 +113,25 @@ func castFptpVote(pollId string, option int) (*voteFormModel, error) {
 
 	err = repository.RecordVote(pollId, &vote)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 
-	return &voteFormModel{
-		Voted: option,
-		FptpVoteModel: &fptpVoteModel{
-			Voted:       option,
-			PollOptions: poll.Options,
+	return render.HttpResponse{
+		Model: voteFormModel{
+			Voted: option,
+			FptpVoteModel: &fptpVoteModel{
+				Voted:       option,
+				PollOptions: poll.Options,
+			},
 		},
 	}, nil
 }
 
-func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*rankedChoiceVoteModel, error) {
+func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 
 	if u.Unselect >= 0 {
@@ -123,16 +143,18 @@ func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate
 
 	selected, err := constructVoteOptionsList(poll, options)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	unselected := constructVoteOptionsListWithout(poll, options)
 
-	return &rankedChoiceVoteModel{
-		Voted:  -1,
-		PollId: poll.PollId,
-		Rco: rankedChoiceOptions{
-			Selected:   selected,
-			Unselected: unselected,
+	return render.HttpResponse{
+		Model: rankedChoiceVoteModel{
+			Voted:  -1,
+			PollId: poll.PollId,
+			Rco: rankedChoiceOptions{
+				Selected:   selected,
+				Unselected: unselected,
+			},
 		},
 	}, nil
 }
@@ -148,30 +170,39 @@ func removeFromList(l []int, v int) []int {
 	return r
 }
 
-func castRankedChoiceVote(pollId string, ranked []int) (*voteFormModel, error) {
+func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, errors.New("poll does not exist")
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll does not exist",
+		}, nil
 	}
 
 	if poll.Status != model.PollStatusVoting {
-		return nil, errors.New("poll is not open for voting")
+		return render.HttpResponse{
+			HttpCode:     http.StatusBadRequest,
+			ErrorMessage: "Poll is not open for voting",
+		}, nil
 	}
 	if poll.AggregationType != model.PollAggregationTypeRankedChoice {
-		return nil, errors.New("incorrect vote type for poll")
+		return render.HttpResponse{
+			HttpCode:     http.StatusBadRequest,
+			ErrorMessage: "Incorrect vote type for poll",
+		}, nil
 	}
 
 	selected, err := constructVoteOptionsList(poll, ranked)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	unselected := constructVoteOptionsListWithout(poll, ranked)
 
-	m := &voteFormModel{
+	m := voteFormModel{
 		Voted: -1,
 		RankedChoiceVoteModel: &rankedChoiceVoteModel{
 			Voted:  -1,
@@ -185,7 +216,9 @@ func castRankedChoiceVote(pollId string, ranked []int) (*voteFormModel, error) {
 
 	if len(unselected) > 0 {
 		m.RankedChoiceVoteModel.ErrorMessage = "All options must be selected"
-		return m, nil
+		return render.HttpResponse{
+			Model: m,
+		}, nil
 	}
 
 	voteId := utils.IdGen()
@@ -198,11 +231,13 @@ func castRankedChoiceVote(pollId string, ranked []int) (*voteFormModel, error) {
 
 	err = repository.RecordVote(pollId, &vote)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 
 	m.Voted = 1
-	return m, nil
+	return render.HttpResponse{
+		Model: m,
+	}, nil
 }
 
 func constructVoteOptionsList(poll *model.Poll, options []int) ([]voteOption, error) {

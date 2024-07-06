@@ -12,22 +12,8 @@ var viewPollRenderer = render.Must(render.CreateRenderer("pages/view_poll/*.html
 
 func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
 	pollId := r.PathValue("id")
-	poll, err := getPoll(pollId)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if poll == nil {
-		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
-		return
-	}
 
-	// TODO handle poll that is not in draft
-
-	err = renderer.Render(w, "index.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "index.html").Render(getPoll(pollId))
 }
 
 func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
@@ -42,24 +28,12 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 	aggregationType := r.PostForm.Get("AggregationType")
 	options := r.PostForm["Options[]"]
 
-	poll, err := updatePollDetails(pollId, pollDetails{
-		Name:            name,
-		AggregationType: aggregationType,
-		Options:         options,
-	})
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if poll == nil {
-		render.ErrorPage(w, "Poll not found", http.StatusNotFound)
-		return
-	}
-
-	err = viewPollRenderer.Render(w, "index.html", poll)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	viewPollRenderer.UsingTemplate(w, "index.html").Render(
+		updatePollDetails(pollId, pollDetails{
+			Name:            name,
+			AggregationType: aggregationType,
+			Options:         options,
+		}))
 }
 
 func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
@@ -80,17 +54,9 @@ func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updatedOptions := patchPollOptions(options, pollOptionsUpdate{
-		Add:    add,
-		Remove: remove,
-	})
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = renderer.Render(w, "poll_options.html", updatedOptions)
-	if err != nil {
-		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
-	}
+	renderer.UsingTemplate(w, "poll_options.html").Render(
+		patchPollOptions(options, pollOptionsUpdate{
+			Add:    add,
+			Remove: remove,
+		}), nil)
 }

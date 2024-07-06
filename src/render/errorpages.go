@@ -15,7 +15,9 @@ func createErrorRenderer() (*Renderer, error) {
 }
 
 func ErrorPage(w http.ResponseWriter, errorMsg string, httpCode int) {
-	w.WriteHeader(httpCode)
+	if httpCode != 0 {
+		w.WriteHeader(httpCode)
+	}
 	err := errorRenderer.Render(w, "error.html", errorMsg)
 	if err != nil {
 		http.Error(w, errorMsg, httpCode)

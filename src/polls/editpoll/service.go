@@ -1,46 +1,58 @@
 package editpoll
 
 import (
-	"errors"
+	"net/http"
 
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/polls/viewpoll"
+	"github.com/Samour/voting/render"
 )
 
-func getPoll(id string) (*editPollModel, error) {
+func getPoll(id string) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, nil
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
-	return &editPollModel{
-		PollId:              poll.PollId,
-		PollName:            poll.Name,
-		PollAggregationType: poll.AggregationType,
-		MayEdit:             poll.Status == model.PollStatusDraft,
-		OptionsModel: editPollOptionsModel{
-			Options: poll.Options,
+	return render.HttpResponse{
+		Model: editPollModel{
+			PollId:              poll.PollId,
+			PollName:            poll.Name,
+			PollAggregationType: poll.AggregationType,
+			MayEdit:             poll.Status == model.PollStatusDraft,
+			OptionsModel: editPollOptionsModel{
+				Options: poll.Options,
+			},
 		},
 	}, nil
 }
 
-func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
+func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 	if len(poll.PollId) == 0 {
-		return nil, nil
+		return render.HttpResponse{
+			HttpCode:     http.StatusNotFound,
+			ErrorMessage: "Poll not found",
+		}, nil
 	}
 
 	if poll.Status != model.PollStatusDraft {
-		return nil, errors.New("cannot edit poll that is not in draft status")
+		return render.HttpResponse{
+			HttpCode:     http.StatusBadRequest,
+			ErrorMessage: "Cannot edit poll that is not in draft status",
+		}, nil
 	}
 
 	poll.Name = d.Name
@@ -48,13 +60,15 @@ func updatePollDetails(id string, d pollDetails) (*model.ViewPollModel, error) {
 	poll.Options = d.Options
 	err = repository.UpdatePollItem(poll)
 	if err != nil {
-		return nil, err
+		return render.HttpResponse{}, err
 	}
 
-	return viewpoll.ToViewPollModel(poll, nil), nil
+	return render.HttpResponse{
+		Model: viewpoll.ToViewPollModel(poll, nil, true),
+	}, nil
 }
 
-func patchPollOptions(options []string, u pollOptionsUpdate) editPollOptionsModel {
+func patchPollOptions(options []string, u pollOptionsUpdate) render.HttpResponse {
 	if u.Remove >= 0 && u.Remove < len(options) {
 		options = append(options[:u.Remove], options[u.Remove+1:]...)
 	}
@@ -62,7 +76,9 @@ func patchPollOptions(options []string, u pollOptionsUpdate) editPollOptionsMode
 		options = append(options, "")
 	}
 
-	return editPollOptionsModel{
-		Options: options,
+	return render.HttpResponse{
+		Model: editPollOptionsModel{
+			Options: options,
+		},
 	}
 }
