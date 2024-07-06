@@ -1,7 +1,6 @@
 package castvote
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -12,8 +11,8 @@ import (
 )
 
 func getPollVoteForm(pollId string) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -24,48 +23,17 @@ func getPollVoteForm(pollId string) (render.HttpResponse, error) {
 		}, nil
 	}
 
-	var fptpModel *fptpVoteModel = nil
-	var rcvModel *rankedChoiceVoteModel = nil
-	if poll.AggregationType == model.PollAggregationTypeFirstPastThePost {
-		fptpModel = &fptpVoteModel{
-			Voted:       -1,
-			PollOptions: poll.Options,
-		}
-	} else if poll.AggregationType == model.PollAggregationTypeRankedChoice {
-		uo := make([]voteOption, len(poll.Options))
-		for i, o := range poll.Options {
-			uo[i] = voteOption{
-				Index:  i,
-				Option: o,
-			}
-		}
-		rcvModel = &rankedChoiceVoteModel{
-			Voted:  -1,
-			PollId: poll.PollId,
-			Rco: rankedChoiceOptions{
-				Unselected: uo,
-			},
-		}
-	}
-
 	return render.HttpResponse{
-		Model: castVoteModel{
-			MayVote:             poll.Status == model.PollStatusVoting,
-			PollId:              poll.PollId,
-			PollName:            poll.Name,
-			PollAggregationType: poll.AggregationType,
-			VoteFormModel: voteFormModel{
-				Voted:                 -1,
-				FptpVoteModel:         fptpModel,
-				RankedChoiceVoteModel: rcvModel,
-			},
-		},
+		Model: buildCastVoteModel(castVoteData{
+			Poll:  poll,
+			Voted: -1,
+		}),
 	}, nil
 }
 
 func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -91,14 +59,11 @@ func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
 
 	if option < 0 || option >= len(poll.Options) {
 		return render.HttpResponse{
-			Model: voteFormModel{
-				Voted: -1,
-				FptpVoteModel: &fptpVoteModel{
-					Voted:        -1,
-					ErrorMessage: "You must select an option to vote for",
-					PollOptions:  poll.Options,
-				},
-			},
+			Model: buildVoteFormModel(castVoteData{
+				Poll:         poll,
+				Voted:        -1,
+				ErrorMessage: "You must select an option to vote for",
+			}),
 		}, nil
 	}
 
@@ -117,19 +82,16 @@ func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: voteFormModel{
+		Model: buildVoteFormModel(castVoteData{
+			Poll:  poll,
 			Voted: option,
-			FptpVoteModel: &fptpVoteModel{
-				Voted:       option,
-				PollOptions: poll.Options,
-			},
-		},
+		}),
 	}, nil
 }
 
 func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -141,21 +103,12 @@ func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate
 		options = append(options, u.Select)
 	}
 
-	selected, err := constructVoteOptionsList(poll, options)
-	if err != nil {
-		return render.HttpResponse{}, err
-	}
-	unselected := constructVoteOptionsListWithout(poll, options)
-
 	return render.HttpResponse{
-		Model: rankedChoiceVoteModel{
+		Model: buildRankedChoiceVoteModel(castVoteData{
+			Poll:   poll,
 			Voted:  -1,
-			PollId: poll.PollId,
-			Rco: rankedChoiceOptions{
-				Selected:   selected,
-				Unselected: unselected,
-			},
-		},
+			Ranked: options,
+		}),
 	}, nil
 }
 
@@ -171,8 +124,8 @@ func removeFromList(l []int, v int) []int {
 }
 
 func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -196,28 +149,14 @@ func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, err
 		}, nil
 	}
 
-	selected, err := constructVoteOptionsList(poll, ranked)
-	if err != nil {
-		return render.HttpResponse{}, err
-	}
-	unselected := constructVoteOptionsListWithout(poll, ranked)
-
-	m := voteFormModel{
-		Voted: -1,
-		RankedChoiceVoteModel: &rankedChoiceVoteModel{
-			Voted:  -1,
-			PollId: poll.PollId,
-			Rco: rankedChoiceOptions{
-				Selected:   selected,
-				Unselected: unselected,
-			},
-		},
-	}
-
-	if len(unselected) > 0 {
-		m.RankedChoiceVoteModel.ErrorMessage = "All options must be selected"
+	if len(ranked) < len(poll.Options) {
 		return render.HttpResponse{
-			Model: m,
+			Model: buildVoteFormModel(castVoteData{
+				Poll:         poll,
+				Voted:        -1,
+				Ranked:       ranked,
+				ErrorMessage: "All options must be selected",
+			}),
 		}, nil
 	}
 
@@ -234,43 +173,11 @@ func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, err
 		return render.HttpResponse{}, err
 	}
 
-	m.Voted = 1
 	return render.HttpResponse{
-		Model: m,
+		Model: buildVoteFormModel(castVoteData{
+			Poll:   poll,
+			Voted:  1,
+			Ranked: ranked,
+		}),
 	}, nil
-}
-
-func constructVoteOptionsList(poll *model.Poll, options []int) ([]voteOption, error) {
-	list := make([]voteOption, len(options))
-	for i, o := range options {
-		if o < 0 || o >= len(poll.Options) {
-			return nil, errors.New("option value out of range")
-		}
-
-		list[i] = voteOption{
-			Index:  o,
-			Option: poll.Options[o],
-		}
-	}
-
-	return list, nil
-}
-
-func constructVoteOptionsListWithout(poll *model.Poll, options []int) []voteOption {
-	list := make([]voteOption, 0)
-OPTIONS:
-	for i, o := range poll.Options {
-		for _, ex := range options {
-			if i == ex {
-				continue OPTIONS
-			}
-		}
-
-		list = append(list, voteOption{
-			Index:  i,
-			Option: o,
-		})
-	}
-
-	return list
 }

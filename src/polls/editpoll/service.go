@@ -10,8 +10,8 @@ import (
 )
 
 func getPoll(id string) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -23,15 +23,7 @@ func getPoll(id string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: editPollModel{
-			PollId:              poll.PollId,
-			PollName:            poll.Name,
-			PollAggregationType: poll.AggregationType,
-			MayEdit:             poll.Status == model.PollStatusDraft,
-			OptionsModel: editPollOptionsModel{
-				Options: poll.Options,
-			},
-		},
+		Model: buildEditPollModel(poll),
 	}, nil
 }
 
@@ -64,7 +56,7 @@ func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: viewpoll.ToViewPollModel(poll, nil, true),
+		Model: viewpoll.BuildViewPollModel(poll, nil, true),
 	}, nil
 }
 
@@ -77,8 +69,6 @@ func patchPollOptions(options []string, u pollOptionsUpdate) render.HttpResponse
 	}
 
 	return render.HttpResponse{
-		Model: editPollOptionsModel{
-			Options: options,
-		},
+		Model: buildEditPollOptionsModel(options),
 	}
 }

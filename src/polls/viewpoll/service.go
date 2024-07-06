@@ -34,48 +34,8 @@ func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: ToViewPollModel(poll, pollResult, renderFullPage),
+		Model: BuildViewPollModel(poll, pollResult, renderFullPage),
 	}, nil
-}
-
-func ToViewPollModel(p *model.Poll, r *model.FptpPollResult, renderFullPage bool) *model.ViewPollModel {
-	statusLabel := p.Status
-	pollForUpdate := false
-	if p.Status == model.PollStatusClosed && r == nil {
-		statusLabel = "closed; vote count pending"
-		pollForUpdate = true
-	}
-
-	aggregationTypeLabel := ""
-	if p.AggregationType == model.PollAggregationTypeFirstPastThePost {
-		aggregationTypeLabel = "First past the post"
-	} else if p.AggregationType == model.PollAggregationTypeRankedChoice {
-		aggregationTypeLabel = "Ranked choice"
-	}
-
-	var result []model.FptpOptionVoteCount = nil
-	if r != nil {
-		result = r.Votes
-	}
-
-	return &model.ViewPollModel{
-		RenderFullPage:       renderFullPage,
-		PollForUpdate:        pollForUpdate,
-		PollId:               p.PollId,
-		PollName:             p.Name,
-		StatusLabel:          statusLabel,
-		AggregationTypeLabel: aggregationTypeLabel,
-		OptionsModel: model.ViewPollOptionsModel{
-			RenderResult: r != nil,
-			Result:       result,
-			Options:      p.Options,
-		},
-		NavigationModel: model.ViewPollNavigationModel{
-			PollStatus: p.Status,
-			PollId:     p.PollId,
-			VotesCast:  p.Statistics.Votes,
-		},
-	}
 }
 
 func updateStatus(id string, status string) (render.HttpResponse, error) {
@@ -124,6 +84,6 @@ func updateStatus(id string, status string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: ToViewPollModel(poll, nil, false),
+		Model: BuildViewPollModel(poll, nil, false),
 	}, nil
 }
