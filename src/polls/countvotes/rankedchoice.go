@@ -20,14 +20,13 @@ func newRankedVoteNode() *rankedVoteNode {
 }
 
 func countRankedChoice(poll *model.Poll) {
-	t := make(map[int]*rankedVoteNode, 0)
-	totalVotes, err := loadInitialVoteTree(poll.PollId, t)
+	t, err := loadInitialVoteTree(poll.PollId)
 	if err != nil {
 		log.Printf("failed fetching vote items: %s\n", err.Error())
 		return
 	}
 
-	target := totalVotes/2 + 1
+	target := t.Votes/2 + 1
 	result := model.RankedChoicePollResult{
 		PollId:        poll.PollId,
 		Discriminator: model.DiscriminatorResult,
@@ -50,38 +49,29 @@ func countRankedChoice(poll *model.Poll) {
 				continue
 			}
 
-			if t[i] == nil {
-				t[i] = newRankedVoteNode()
+			if t.NextPreferences[i] == nil {
+				t.NextPreferences[i] = newRankedVoteNode()
 			}
 
-			result.Votes[i].RoundVotes = append(result.Votes[i].RoundVotes, t[i].Votes)
+			result.Votes[i].RoundVotes = append(result.Votes[i].RoundVotes, t.NextPreferences[i].Votes)
 
-			if t[i].Votes > mostVotes {
-				mostVotes = t[i].Votes
+			if t.NextPreferences[i].Votes > mostVotes {
+				mostVotes = t.NextPreferences[i].Votes
 			}
-			if t[i].Votes < leastVotes {
-				leastVotes = t[i].Votes
+			if t.NextPreferences[i].Votes < leastVotes {
+				leastVotes = t.NextPreferences[i].Votes
 				leastPopular = []int{i}
-			} else if t[i].Votes == leastVotes {
+			} else if t.NextPreferences[i].Votes == leastVotes {
 				leastPopular = append(leastPopular, i)
 			}
 		}
 
-		if mostVotes >= target || len(t) <= 1 {
+		if mostVotes >= target || len(t.NextPreferences) <= 1 {
 			break
 		}
 
 		for _, i := range leastPopular {
-			for o, f := range t {
-				if o != i {
-					f.remove(i)
-				}
-			}
-
-			for o, n := range t[i].NextPreferences {
-				t[o].merge(n)
-			}
-			delete(t, i)
+			t.remove(i)
 		}
 
 		eliminated = append(eliminated, leastPopular...)
@@ -93,28 +83,22 @@ func countRankedChoice(poll *model.Poll) {
 	}
 }
 
-func loadInitialVoteTree(pollId string, t map[int]*rankedVoteNode) (int, error) {
-	totalVotes := 0
+func loadInitialVoteTree(pollId string) (*rankedVoteNode, error) {
+	t := newRankedVoteNode()
 	var continuation *string = nil
 	for {
 		page := make([]model.RankedChoiceVote, 0)
 		continuation, err := repository.GetPollVoteItems(pollId, continuation, &page)
 		if err != nil {
-			return -1, err
+			return nil, err
 		}
 
 		for _, v := range page {
-			totalVotes++
-			n := t[v.Ranked[0]]
-			if n == nil {
-				n = newRankedVoteNode()
-				t[v.Ranked[0]] = n
-			}
-			n.addVote(v.Ranked[1:])
+			t.addVote(v.Ranked)
 		}
 
 		if continuation == nil {
-			return totalVotes, nil
+			return t, nil
 		}
 	}
 }
