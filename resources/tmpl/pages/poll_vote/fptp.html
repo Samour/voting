@@ -1,8 +1,8 @@
 {{ $voted := .Voted }}
-{{ template "error_panel.html" .ErrorString }}
+{{ template "error_panel.html" .ErrorMessage }}
 <div class="row">
   <ol>
-    {{ range $i, $_ := .Poll.Options }}
+    {{ range $i, $_ := .PollOptions }}
     {{ $index := plus $i 1 }}
     <li>
       <label style="display: inline;">

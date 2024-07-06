@@ -1,6 +1,6 @@
-{{ $poll_id := .Poll.PollId }}
+{{ $poll_id := .PollId }}
 {{ $may_vote := eq .Voted -1 }}
-{{ template "error_panel.html" .ErrorString }}
+{{ template "error_panel.html" .ErrorMessage }}
 <div id="ranked-choice-votes">
   <div class="row">
     <div class="twelve columns">

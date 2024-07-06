@@ -19,8 +19,14 @@ func getPollVoteForm(pollId string) (*castVoteModel, error) {
 		return nil, nil
 	}
 
-	var rco *rankedChoiceOptions = nil
-	if poll.AggregationType == model.PollAggregationTypeRankedChoice {
+	var fptpModel *fptpVoteModel = nil
+	var rcvModel *rankedChoiceVoteModel = nil
+	if poll.AggregationType == model.PollAggregationTypeFirstPastThePost {
+		fptpModel = &fptpVoteModel{
+			Voted:       -1,
+			PollOptions: poll.Options,
+		}
+	} else if poll.AggregationType == model.PollAggregationTypeRankedChoice {
 		uo := make([]voteOption, len(poll.Options))
 		for i, o := range poll.Options {
 			uo[i] = voteOption{
@@ -28,20 +34,29 @@ func getPollVoteForm(pollId string) (*castVoteModel, error) {
 				Option: o,
 			}
 		}
-		rco = &rankedChoiceOptions{
-			Unselected: uo,
+		rcvModel = &rankedChoiceVoteModel{
+			Voted:  -1,
+			PollId: poll.PollId,
+			Rco: rankedChoiceOptions{
+				Unselected: uo,
+			},
 		}
 	}
 
 	return &castVoteModel{
-		Poll:    poll,
-		Rco:     rco,
-		MayVote: poll.Status == model.PollStatusVoting,
-		Voted:   -1,
+		MayVote:             poll.Status == model.PollStatusVoting,
+		PollId:              poll.PollId,
+		PollName:            poll.Name,
+		PollAggregationType: poll.AggregationType,
+		VoteFormModel: voteFormModel{
+			Voted:                 -1,
+			FptpVoteModel:         fptpModel,
+			RankedChoiceVoteModel: rcvModel,
+		},
 	}, nil
 }
 
-func castFptpVote(pollId string, option int) (*castVoteModel, error) {
+func castFptpVote(pollId string, option int) (*voteFormModel, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
@@ -59,12 +74,13 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 	}
 
 	if option < 0 || option >= len(poll.Options) {
-		errorMsg := "You must select an option to vote for"
-		return &castVoteModel{
-			Poll:        poll,
-			MayVote:     true,
-			Voted:       -1,
-			ErrorString: &errorMsg,
+		return &voteFormModel{
+			Voted: -1,
+			FptpVoteModel: &fptpVoteModel{
+				Voted:        -1,
+				ErrorMessage: "You must select an option to vote for",
+				PollOptions:  poll.Options,
+			},
 		}, nil
 	}
 
@@ -82,14 +98,16 @@ func castFptpVote(pollId string, option int) (*castVoteModel, error) {
 		return nil, err
 	}
 
-	return &castVoteModel{
-		Poll:    poll,
-		MayVote: true,
-		Voted:   option,
+	return &voteFormModel{
+		Voted: option,
+		FptpVoteModel: &fptpVoteModel{
+			Voted:       option,
+			PollOptions: poll.Options,
+		},
 	}, nil
 }
 
-func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*castVoteModel, error) {
+func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate) (*rankedChoiceVoteModel, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
@@ -109,14 +127,13 @@ func updateRankedChoiceOption(pollId string, options []int, u rankedChoiceUpdate
 	}
 	unselected := constructVoteOptionsListWithout(poll, options)
 
-	return &castVoteModel{
-		Poll: poll,
-		Rco: &rankedChoiceOptions{
+	return &rankedChoiceVoteModel{
+		Voted:  -1,
+		PollId: poll.PollId,
+		Rco: rankedChoiceOptions{
 			Selected:   selected,
 			Unselected: unselected,
 		},
-		MayVote: true,
-		Voted:   -1,
 	}, nil
 }
 
@@ -131,7 +148,7 @@ func removeFromList(l []int, v int) []int {
 	return r
 }
 
-func castRankedChoiceVote(pollId string, ranked []int) (*castVoteModel, error) {
+func castRankedChoiceVote(pollId string, ranked []int) (*voteFormModel, error) {
 	poll := &model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
 	if err != nil {
@@ -154,19 +171,20 @@ func castRankedChoiceVote(pollId string, ranked []int) (*castVoteModel, error) {
 	}
 	unselected := constructVoteOptionsListWithout(poll, ranked)
 
-	m := &castVoteModel{
-		Poll: poll,
-		Rco: &rankedChoiceOptions{
-			Selected:   selected,
-			Unselected: unselected,
+	m := &voteFormModel{
+		Voted: -1,
+		RankedChoiceVoteModel: &rankedChoiceVoteModel{
+			Voted:  -1,
+			PollId: poll.PollId,
+			Rco: rankedChoiceOptions{
+				Selected:   selected,
+				Unselected: unselected,
+			},
 		},
-		MayVote: true,
-		Voted:   -1,
 	}
 
 	if len(unselected) > 0 {
-		errMsg := "All options must be selected"
-		m.ErrorString = &errMsg
+		m.RankedChoiceVoteModel.ErrorMessage = "All options must be selected"
 		return m, nil
 	}
 

@@ -1,14 +1,14 @@
 {{ template "page_header.html" }}
 {{ if .MayVote }}
-<h1>{{ .Poll.Name }}</h1>
-<form hx-post="/polls/{{ .Poll.PollId }}/vote/{{ .Poll.AggregationType }}/">
-  {{ template "vote_form.html" . }}
+<h1>{{ .PollName }}</h1>
+<form hx-post="/polls/{{ .PollId }}/vote/{{ .PollAggregationType }}/">
+  {{ template "vote_form.html" .VoteFormModel }}
 </form>
 {{ else }}
 <h3 class="error">Voting on this poll is not open</h3>
 <div class="row">
   <div class="twelve columns">
-    <a href="/polls/{{ .Poll.PollId }}">Return</a>
+    <a href="/polls/{{ .PollId }}">Return</a>
     <a href="/" class="u-pull-right">Home</a>
   </div>
 </div>

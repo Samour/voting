@@ -1,7 +1,7 @@
-{{ if eq .Poll.AggregationType "fptp" }}
-{{ template "fptp.html" . }}
-{{ else if eq .Poll.AggregationType "rankedchoice" }}
-{{ template "rankedchoice.html" . }}
+{{ if .FptpVoteModel }}
+{{ template "fptp.html" .FptpVoteModel }}
+{{ else if .RankedChoiceVoteModel }}
+{{ template "rankedchoice.html" .RankedChoiceVoteModel }}
 {{ end }}
 <div class="row">
   {{ if eq .Voted -1 }}

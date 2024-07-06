@@ -1,18 +1,38 @@
 package castvote
 
-import "github.com/Samour/voting/polls/model"
-
 type rankedChoiceUpdate struct {
 	Select   int
 	Unselect int
 }
 
 type castVoteModel struct {
-	Poll        *model.Poll
-	Rco         *rankedChoiceOptions
-	MayVote     bool
-	Voted       int
-	ErrorString *string
+	// View controls
+	MayVote bool
+	// Data
+	PollId              string
+	PollName            string
+	PollAggregationType string
+	// Components
+	VoteFormModel voteFormModel
+}
+
+type voteFormModel struct {
+	Voted                 int
+	FptpVoteModel         *fptpVoteModel
+	RankedChoiceVoteModel *rankedChoiceVoteModel
+}
+
+type fptpVoteModel struct {
+	Voted        int
+	ErrorMessage string
+	PollOptions  []string
+}
+
+type rankedChoiceVoteModel struct {
+	Voted        int
+	PollId       string
+	ErrorMessage string
+	Rco          rankedChoiceOptions
 }
 
 type rankedChoiceOptions struct {
