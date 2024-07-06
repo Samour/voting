@@ -56,7 +56,7 @@ func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: viewpoll.BuildViewPollModel(poll, nil, true),
+		Model: viewpoll.BuildViewPollModel(poll, nil, nil, true),
 	}, nil
 }
 

@@ -1,1 +1,26 @@
-<strong>TODO</strong>
+<table>
+  <thead>
+    <tr>
+      <td>Option</td>
+      {{ range .RoundTitles }}
+      <td>{{ . }}</td>
+      {{ end }}
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Result }}
+    <tr>
+      <td>{{ .Option }}</td>
+      {{ range .RoundVotes }}
+      <td>
+        {{ if eq . -1 }}
+        <i>X</i>
+        {{ else }}
+        {{ . }}
+        {{ end }}
+      </td>
+      {{ end }}
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

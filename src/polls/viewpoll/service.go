@@ -24,18 +24,51 @@ func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
 		}, nil
 	}
 
-	pollResult := &model.FptpPollResult{}
-	err = repository.GetPollItem(id, model.DiscriminatorResult, pollResult)
-	if err != nil {
-		return render.HttpResponse{}, err
-	}
-	if len(pollResult.PollId) == 0 {
-		pollResult = nil
+	var fptpResult *model.FptpPollResult
+	var rankedChoiceResult *model.RankedChoicePollResult
+	if poll.Status == model.PollStatusClosed {
+		if poll.AggregationType == model.PollAggregationTypeFirstPastThePost {
+			fptpResult, err = loadFptpResult(id)
+			if err != nil {
+				return render.HttpResponse{}, err
+			}
+		} else if poll.AggregationType == model.PollAggregationTypeRankedChoice {
+			rankedChoiceResult, err = loadRankedChoiceResult(id)
+			if err != nil {
+				return render.HttpResponse{}, err
+			}
+		}
 	}
 
 	return render.HttpResponse{
-		Model: BuildViewPollModel(poll, pollResult, renderFullPage),
+		Model: BuildViewPollModel(poll, fptpResult, rankedChoiceResult, renderFullPage),
 	}, nil
+}
+
+func loadFptpResult(pollId string) (*model.FptpPollResult, error) {
+	result := &model.FptpPollResult{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorResult, result)
+	if err != nil {
+		return nil, err
+	}
+	if len(result.PollId) == 0 {
+		return nil, nil
+	}
+
+	return result, nil
+}
+
+func loadRankedChoiceResult(pollId string) (*model.RankedChoicePollResult, error) {
+	result := &model.RankedChoicePollResult{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorResult, result)
+	if err != nil {
+		return nil, err
+	}
+	if len(result.PollId) == 0 {
+		return nil, nil
+	}
+
+	return result, nil
 }
 
 func updateStatus(id string, status string) (render.HttpResponse, error) {
@@ -84,6 +117,6 @@ func updateStatus(id string, status string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: BuildViewPollModel(poll, nil, false),
+		Model: BuildViewPollModel(poll, nil, nil, false),
 	}, nil
 }

@@ -27,6 +27,8 @@ type ViewPollFptpResultModel struct {
 }
 
 type ViewPollRcvResultModel struct {
+	RoundTitles []string
+	Result      []RankedChoiceOptionVoteCount
 }
 
 type ViewPollNavigationModel struct {
