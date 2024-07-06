@@ -2,7 +2,7 @@ package viewpoll
 
 import "github.com/Samour/voting/polls/model"
 
-func BuildViewPollModel(p *model.Poll, r *model.FptpPollResult, renderFullPage bool) model.ViewPollModel {
+func BuildViewPollModel(p model.Poll, r *model.FptpPollResult, renderFullPage bool) model.ViewPollModel {
 	statusLabel := p.Status
 	pollForUpdate := false
 	if p.Status == model.PollStatusClosed && r == nil {
@@ -29,7 +29,7 @@ func BuildViewPollModel(p *model.Poll, r *model.FptpPollResult, renderFullPage b
 	}
 }
 
-func buildViewPollOptionsModel(p *model.Poll, r *model.FptpPollResult) model.ViewPollOptionsModel {
+func buildViewPollOptionsModel(p model.Poll, r *model.FptpPollResult) model.ViewPollOptionsModel {
 	var result []model.FptpOptionVoteCount = nil
 	if r != nil {
 		result = r.Votes
@@ -42,7 +42,7 @@ func buildViewPollOptionsModel(p *model.Poll, r *model.FptpPollResult) model.Vie
 	}
 }
 
-func buildViewPollNavigationModel(p *model.Poll) model.ViewPollNavigationModel {
+func buildViewPollNavigationModel(p model.Poll) model.ViewPollNavigationModel {
 	return model.ViewPollNavigationModel{
 		PollStatus: p.Status,
 		PollId:     p.PollId,

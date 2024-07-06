@@ -58,7 +58,7 @@ func GetPollItem(id string, discriminator string, p interface{}) error {
 	return nil
 }
 
-func UpdatePollItem(p *model.Poll) error {
+func UpdatePollItem(p model.Poll) error {
 	client := clients.DynamoDb()
 	item, err := attributevalue.MarshalMap(p)
 	if err != nil {

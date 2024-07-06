@@ -12,8 +12,8 @@ import (
 )
 
 func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}
@@ -39,8 +39,8 @@ func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
 }
 
 func updateStatus(id string, status string) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}

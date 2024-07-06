@@ -8,8 +8,8 @@ import (
 )
 
 func CountVotes(pollId string) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		log.Printf("failed fetching poll: %s\n", err.Error())
 		return

@@ -28,8 +28,8 @@ func getPoll(id string) (render.HttpResponse, error) {
 }
 
 func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
-	poll := &model.Poll{}
-	err := repository.GetPollItem(id, model.DiscriminatorPoll, poll)
+	poll := model.Poll{}
+	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
 		return render.HttpResponse{}, err
 	}

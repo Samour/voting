@@ -14,6 +14,6 @@ func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirect := fmt.Sprintf("/polls/%s/edit", *id)
+	redirect := fmt.Sprintf("/polls/%s/edit", id)
 	http.Redirect(w, r, redirect, http.StatusFound)
 }

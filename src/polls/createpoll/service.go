@@ -6,7 +6,7 @@ import (
 	"github.com/Samour/voting/utils"
 )
 
-func createPoll() (*string, error) {
+func createPoll() (string, error) {
 	id := utils.IdGen()
 	poll := model.Poll{
 		PollId:          id,
@@ -19,8 +19,8 @@ func createPoll() (*string, error) {
 
 	err := repository.InsertNewPollItem(&poll)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &id, nil
+	return id, nil
 }

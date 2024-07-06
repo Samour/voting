@@ -7,7 +7,7 @@ import (
 	"github.com/Samour/voting/polls/repository"
 )
 
-func countFptp(poll *model.Poll) {
+func countFptp(poll model.Poll) {
 	voteCounts := make(map[int]int, 0)
 	var continuation *string = nil
 
@@ -36,7 +36,7 @@ func countFptp(poll *model.Poll) {
 		}
 	}
 
-	result := &model.FptpPollResult{
+	result := model.FptpPollResult{
 		PollId:        poll.PollId,
 		Discriminator: model.DiscriminatorResult,
 		Votes:         counts,

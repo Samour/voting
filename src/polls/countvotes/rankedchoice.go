@@ -19,7 +19,7 @@ func newRankedVoteNode() *rankedVoteNode {
 	}
 }
 
-func countRankedChoice(poll *model.Poll) {
+func countRankedChoice(poll model.Poll) {
 	t, err := loadInitialVoteTree(poll.PollId)
 	if err != nil {
 		log.Printf("failed fetching vote items: %s\n", err.Error())

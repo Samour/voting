@@ -47,7 +47,7 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	selected, err := extractSelectedArray(&r.PostForm)
+	selected, err := extractSelectedArray(r.PostForm)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
@@ -87,7 +87,7 @@ func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ranked, err := extractSelectedArray(&r.PostForm)
+	ranked, err := extractSelectedArray(r.PostForm)
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
@@ -96,7 +96,7 @@ func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
 	renderer.UsingTemplate(w, "vote_form.html").Render(castRankedChoiceVote(pollId, ranked))
 }
 
-func extractSelectedArray(v *url.Values) ([]int, error) {
+func extractSelectedArray(v url.Values) ([]int, error) {
 	r := make([]int, 0)
 	i := 0
 	for {
