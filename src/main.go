@@ -8,18 +8,22 @@ import (
 	"github.com/Samour/voting/clients"
 	"github.com/Samour/voting/home"
 	"github.com/Samour/voting/polls"
+	"github.com/Samour/voting/user"
 )
 
 func main() {
 	clients.WarmDynamoDbClient()
 
 	homeControllers := home.CreateHomeControllers()
+	userControllers := user.CreateUserControllers()
 	pollControllers := polls.CreatePollControllers()
 
 	static := http.FileServer(http.Dir("../resources/static/"))
 	http.Handle("GET /static/", http.StripPrefix("/static/", static))
 
 	http.HandleFunc("GET /{$}", homeControllers.ServeHome)
+
+	http.HandleFunc("GET /signup", userControllers.ServeSignUp)
 
 	http.HandleFunc("GET /polls/{id}/{$}", pollControllers.ServeViewPoll)
 	http.HandleFunc("PUT /polls/{id}/status/{$}", pollControllers.HandlePollStatusChange)
