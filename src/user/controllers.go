@@ -7,11 +7,13 @@ import (
 )
 
 type UserControllers struct {
-	ServeSignUp func(http.ResponseWriter, *http.Request)
+	ServeSignUp  func(http.ResponseWriter, *http.Request)
+	HandleSignUp func(http.ResponseWriter, *http.Request)
 }
 
 func CreateUserControllers() UserControllers {
 	return UserControllers{
-		ServeSignUp: signup.ServeSignUp,
+		ServeSignUp:  signup.ServeSignUp,
+		HandleSignUp: signup.HandleSignUp,
 	}
 }
