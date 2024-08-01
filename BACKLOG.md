@@ -1,6 +1,5 @@
 # Backlog
 
-- Tally ranked-choice poll result
 - Sign up user account (username/password)
 - Restrict poll results to owners
 - Allow poll owner to restrict voting to signed-in users only
