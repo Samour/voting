@@ -1,0 +1,15 @@
+{
+  "TableName": "users",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "UserId",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "UserId",
+      "KeyType": "HASH"
+    }
+  ]
+}

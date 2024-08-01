@@ -20,5 +20,7 @@ create_table() {
 }
 
 create_table polls
+create_table users
+create_table username-password-credentials
 
 echo "All tables created"
