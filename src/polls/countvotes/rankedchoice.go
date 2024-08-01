@@ -1,8 +1,12 @@
 package countvotes
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"math"
+	"strconv"
+	"strings"
 
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
@@ -159,4 +163,70 @@ func (t *rankedVoteNode) merge(other *rankedVoteNode) {
 		}
 		n.merge(c)
 	}
+}
+
+func (t *rankedVoteNode) writeParts() []string {
+	parts := make([]string, 0)
+	parts = append(parts, fmt.Sprintf("%d;%d;", t.Votes, len(t.NextPreferences)))
+	for k, t := range t.NextPreferences {
+		parts = append(parts, fmt.Sprintf("%d;", k))
+		parts = append(parts, t.writeParts()...)
+	}
+
+	return parts
+}
+
+func (t *rankedVoteNode) write() string {
+	return strings.Join(t.writeParts(), "")
+}
+
+type RankedNodeTreeParser struct {
+	ser string
+}
+
+func (p *RankedNodeTreeParser) nextToken() (int, error) {
+	c := 0
+	for c < len(p.ser) && p.ser[c] != ';' {
+		c++
+	}
+	if c >= len(p.ser) {
+		return 0, errors.New("unexpected end of stream")
+	}
+
+	val, err := strconv.Atoi(p.ser[:c])
+	if err != nil {
+		return 0, err
+	}
+
+	p.ser = p.ser[c+1:]
+	return val, nil
+}
+
+func (p *RankedNodeTreeParser) parse() (*rankedVoteNode, error) {
+	votes, err := p.nextToken()
+	if err != nil {
+		return nil, err
+	}
+
+	npc, err := p.nextToken()
+	if err != nil {
+		return nil, err
+	}
+	nextPreferences := make(map[int]*rankedVoteNode, 0)
+	for i := 0; i < npc; i++ {
+		o, err := p.nextToken()
+		if err != nil {
+			return nil, err
+		}
+		n, err := p.parse()
+		if err != nil {
+			return nil, err
+		}
+		nextPreferences[o] = n
+	}
+
+	return &rankedVoteNode{
+		Votes:           votes,
+		NextPreferences: nextPreferences,
+	}, nil
 }
