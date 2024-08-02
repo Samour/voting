@@ -3,6 +3,7 @@ package signup
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/Samour/voting/render"
 	"github.com/Samour/voting/user/model"
@@ -27,7 +28,7 @@ func createAccount(username string, password string) (*string, render.HttpRespon
 		DisplayName: username,
 	}
 	credentials := model.UsernamePasswordCredential{
-		Username:     username,
+		Username:     strings.ToLower(username),
 		PasswordHash: password,
 		UserId:       user.UserId,
 	}
