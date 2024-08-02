@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/middleware"
 	"github.com/Samour/voting/types"
 	"github.com/Samour/voting/user/login"
 	"github.com/Samour/voting/user/signup"
@@ -13,14 +13,16 @@ type UserControllers struct {
 
 	ServeLogIn  types.Controller
 	HandleLogIn types.Controller
+	ServeLogOut types.Controller
 }
 
 func CreateUserControllers() UserControllers {
 	return UserControllers{
-		ServeSignUp:  auth.RedirectAuthenticated(signup.ServeSignUp),
+		ServeSignUp:  middleware.RedirectAuthenticated(signup.ServeSignUp),
 		HandleSignUp: signup.HandleSignUp,
 
-		ServeLogIn:  auth.RedirectAuthenticated(login.ServeLogIn),
+		ServeLogIn:  middleware.RedirectAuthenticated(login.ServeLogIn),
 		HandleLogIn: login.HandleLogIn,
+		ServeLogOut: middleware.AuthenticatedWithRedirect(login.ServeLogOut),
 	}
 }

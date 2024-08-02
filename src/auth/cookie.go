@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"net/http"
+	"time"
 )
 
 const cookieName = "SessionId"
@@ -12,6 +13,13 @@ func WriteSessionCookie(w http.ResponseWriter, sessionId string) {
 		Name:  cookieName,
 		Value: sessionId,
 		// Should set max-age, samesite etc for secure cookies
+	})
+}
+
+func ClearSessionCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:    cookieName,
+		Expires: time.Now().Add(-24 * time.Hour),
 	})
 }
 

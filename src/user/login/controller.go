@@ -31,3 +31,9 @@ func HandleLogIn(w http.ResponseWriter, r *http.Request) {
 		renderer.UsingTemplate(w, "login.html").Render(page, err)
 	}
 }
+
+func ServeLogOut(w http.ResponseWriter, r *http.Request, session auth.Session) {
+	auth.RemoveSession(session.SessionId)
+	auth.ClearSessionCookie(w)
+	http.Redirect(w, r, "/login", http.StatusFound)
+}

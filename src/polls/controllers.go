@@ -1,7 +1,7 @@
 package polls
 
 import (
-	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/middleware"
 	"github.com/Samour/voting/polls/castvote"
 	"github.com/Samour/voting/polls/createpoll"
 	"github.com/Samour/voting/polls/editpoll"
@@ -27,14 +27,14 @@ type PollControllers struct {
 
 func CreatePollControllers() PollControllers {
 	return PollControllers{
-		ServeViewPoll:          auth.RedirectUnauthenticated(viewpoll.ServeViewPoll),
-		HandlePollStatusChange: auth.PreventUnauthenticated(viewpoll.HandlePollStatusChange),
+		ServeViewPoll:          middleware.RedirectUnauthenticated(viewpoll.ServeViewPoll),
+		HandlePollStatusChange: middleware.PreventUnauthenticated(viewpoll.HandlePollStatusChange),
 
-		ServeNewPoll: auth.RedirectUnauthenticated(createpoll.ServeNewPoll),
+		ServeNewPoll: middleware.RedirectUnauthenticated(createpoll.ServeNewPoll),
 
-		ServeEditPoll:   auth.RedirectUnauthenticated(editpoll.ServeEditPoll),
-		ServeSavePoll:   auth.PreventUnauthenticated(editpoll.ServeSavePoll),
-		HandlePatchPoll: auth.PreventUnauthenticated(editpoll.HandlePatchPoll),
+		ServeEditPoll:   middleware.RedirectUnauthenticated(editpoll.ServeEditPoll),
+		ServeSavePoll:   middleware.PreventUnauthenticated(editpoll.ServeSavePoll),
+		HandlePatchPoll: middleware.PreventUnauthenticated(editpoll.HandlePatchPoll),
 
 		ServeVotePoll:              castvote.ServeVotePoll,
 		HandleCastFptpVote:         castvote.HandleCastFptpVote,

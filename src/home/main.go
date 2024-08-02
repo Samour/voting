@@ -1,7 +1,7 @@
 package home
 
 import (
-	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/middleware"
 	"github.com/Samour/voting/types"
 )
 
@@ -11,6 +11,6 @@ type HomeControllers struct {
 
 func CreateHomeControllers() HomeControllers {
 	return HomeControllers{
-		ServeHome: auth.RedirectUnauthenticated(ServeHome),
+		ServeHome: middleware.RedirectUnauthenticated(ServeHome),
 	}
 }

@@ -43,3 +43,7 @@ func RetrieveSession(sessionId string) (Session, bool) {
 		return Session{}, false
 	}
 }
+
+func RemoveSession(sessionId string) {
+	sessionStore.Delete(sessionId)
+}
