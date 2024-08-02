@@ -32,8 +32,8 @@ func HandleLogIn(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ServeLogOut(w http.ResponseWriter, r *http.Request, session auth.Session) {
-	auth.RemoveSession(session.SessionId)
+func ServeLogOut(w http.ResponseWriter, r *http.Request, s auth.Session) {
+	auth.RemoveSession(s.SessionId)
 	auth.ClearSessionCookie(w)
 	http.Redirect(w, r, "/login", http.StatusFound)
 }

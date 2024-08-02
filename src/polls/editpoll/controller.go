@@ -4,19 +4,20 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 )
 
 var renderer = render.Must(render.CreateRenderer("pages/edit_poll/*.html"))
 var viewPollRenderer = render.Must(render.CreateRenderer("pages/view_poll/*.html"))
 
-func ServeEditPoll(w http.ResponseWriter, r *http.Request) {
+func ServeEditPoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	pollId := r.PathValue("id")
 
 	renderer.UsingTemplate(w, "index.html").Render(getPoll(pollId))
 }
 
-func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
+func ServeSavePoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	pollId := r.PathValue("id")
 	err := r.ParseForm()
 	if err != nil {
@@ -36,7 +37,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request) {
 		}))
 }
 
-func HandlePatchPoll(w http.ResponseWriter, r *http.Request) {
+func HandlePatchPoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	err := r.ParseForm()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)

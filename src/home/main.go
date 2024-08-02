@@ -11,6 +11,6 @@ type HomeControllers struct {
 
 func CreateHomeControllers() HomeControllers {
 	return HomeControllers{
-		ServeHome: middleware.RedirectUnauthenticated(ServeHome),
+		ServeHome: middleware.AuthenticatedWithRedirect(ServeHome),
 	}
 }

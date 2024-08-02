@@ -27,14 +27,14 @@ type PollControllers struct {
 
 func CreatePollControllers() PollControllers {
 	return PollControllers{
-		ServeViewPoll:          middleware.RedirectUnauthenticated(viewpoll.ServeViewPoll),
-		HandlePollStatusChange: middleware.PreventUnauthenticated(viewpoll.HandlePollStatusChange),
+		ServeViewPoll:          middleware.AuthenticatedWithRedirect(viewpoll.ServeViewPoll),
+		HandlePollStatusChange: middleware.AuthenticatedWithError(viewpoll.HandlePollStatusChange),
 
-		ServeNewPoll: middleware.RedirectUnauthenticated(createpoll.ServeNewPoll),
+		ServeNewPoll: middleware.AuthenticatedWithRedirect(createpoll.ServeNewPoll),
 
-		ServeEditPoll:   middleware.RedirectUnauthenticated(editpoll.ServeEditPoll),
-		ServeSavePoll:   middleware.PreventUnauthenticated(editpoll.ServeSavePoll),
-		HandlePatchPoll: middleware.PreventUnauthenticated(editpoll.HandlePatchPoll),
+		ServeEditPoll:   middleware.AuthenticatedWithRedirect(editpoll.ServeEditPoll),
+		ServeSavePoll:   middleware.AuthenticatedWithError(editpoll.ServeSavePoll),
+		HandlePatchPoll: middleware.AuthenticatedWithError(editpoll.HandlePatchPoll),
 
 		ServeVotePoll:              castvote.ServeVotePoll,
 		HandleCastFptpVote:         castvote.HandleCastFptpVote,

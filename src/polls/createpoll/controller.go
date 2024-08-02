@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 )
 
-func ServeNewPoll(w http.ResponseWriter, r *http.Request) {
+func ServeNewPoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	id, err := createPoll()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)

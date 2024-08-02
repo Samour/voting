@@ -18,10 +18,10 @@ type UserControllers struct {
 
 func CreateUserControllers() UserControllers {
 	return UserControllers{
-		ServeSignUp:  middleware.RedirectAuthenticated(signup.ServeSignUp),
+		ServeSignUp:  middleware.Unauthenticated(signup.ServeSignUp),
 		HandleSignUp: signup.HandleSignUp,
 
-		ServeLogIn:  middleware.RedirectAuthenticated(login.ServeLogIn),
+		ServeLogIn:  middleware.Unauthenticated(login.ServeLogIn),
 		HandleLogIn: login.HandleLogIn,
 		ServeLogOut: middleware.AuthenticatedWithRedirect(login.ServeLogOut),
 	}
