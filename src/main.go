@@ -26,6 +26,9 @@ func main() {
 	http.HandleFunc("GET /signup", userControllers.ServeSignUp)
 	http.HandleFunc("POST /signup", userControllers.HandleSignUp)
 
+	http.HandleFunc("GET /login", userControllers.ServeLogIn)
+	http.HandleFunc("POST /login", userControllers.HandleLogIn)
+
 	http.HandleFunc("GET /polls/{id}/{$}", pollControllers.ServeViewPoll)
 	http.HandleFunc("PUT /polls/{id}/status/{$}", pollControllers.HandlePollStatusChange)
 

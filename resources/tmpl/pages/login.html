@@ -1,0 +1,22 @@
+{{ template "page_header.html" }}
+<form method="POST">
+  <div class="row">
+    <div class="one columns">&nbsp;</div>
+    <div class="ten columns">
+      <h1>Log In</h1>
+      {{ template "error_panel.html" .ErrorMessage }}
+      <label for="Username">Username</label>
+      <input class="u-full-width" type="text" id="Username" name="Username" value="{{ .Username }}"/>
+      <label for="Password">Password</label>
+      <input class="u-full-width" type="Password" id="Password" name="Password" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="one columns">&nbsp;</div>
+    <div class="ten columns">
+      <a href="/signup">Create Account</a>
+      <button class="u-pull-right button-primary" type="submit">Log In</button>
+    </div>
+  </div>
+</form>
+{{ template "page_footer.html" }}

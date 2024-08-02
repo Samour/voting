@@ -76,3 +76,26 @@ func translateInsertNewUserError(err error) error {
 
 	return err
 }
+
+func LoadUsernamePasswordCredential(username string) (model.UsernamePasswordCredential, error) {
+	client := clients.DynamoDb()
+	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
+		TableName: &usernamePasswordCredentialTableName,
+		Key: map[string]types.AttributeValue{
+			"Username": &types.AttributeValueMemberS{
+				Value: username,
+			},
+		},
+	})
+	if err != nil {
+		return model.UsernamePasswordCredential{}, err
+	}
+
+	if len(item.Item) == 0 {
+		return model.UsernamePasswordCredential{}, nil
+	}
+
+	credential := model.UsernamePasswordCredential{}
+	err = attributevalue.UnmarshalMap(item.Item, &credential)
+	return credential, err
+}
