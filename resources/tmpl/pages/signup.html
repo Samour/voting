@@ -5,6 +5,20 @@
     <div class="ten columns">
       <h1>Sign Up</h1>
       {{ template "error_panel.html" .ErrorMessage }}
+      {{ if .ValidationErrors }}
+      <div class="row">
+        <div class="two columns">&nbsp</div>
+        <div class="eight columns">
+          <div class="error-alert">
+            <ul>
+              {{ range .ValidationErrors }}
+              <li>{{ . }}</li>
+              {{ end }}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {{ end }}
       <label for="Username">Username</label>
       <input class="u-full-width" type="text" id="Username" name="Username" value="{{ .Username }}"/>
       <label for="password">Password</label>
