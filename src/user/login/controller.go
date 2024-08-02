@@ -3,6 +3,7 @@ package login
 import (
 	"net/http"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 )
 
@@ -22,10 +23,11 @@ func HandleLogIn(w http.ResponseWriter, r *http.Request) {
 	username := r.PostForm.Get("Username")
 	password := r.PostForm.Get("Password")
 
-	redirect, res, err := logIn(username, password)
-	if redirect != nil {
-		http.Redirect(w, r, *redirect, http.StatusFound)
+	loginSuccess, page, err := logIn(username, password)
+	if len(loginSuccess.SessionId) > 0 {
+		auth.WriteSessionCookie(w, loginSuccess.SessionId)
+		http.Redirect(w, r, loginSuccess.Redirect, http.StatusFound)
 	} else {
-		renderer.UsingTemplate(w, "login.html").Render(res, err)
+		renderer.UsingTemplate(w, "login.html").Render(page, err)
 	}
 }

@@ -3,6 +3,7 @@ package signup
 import (
 	"net/http"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 )
 
@@ -22,10 +23,11 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 	username := r.PostForm.Get("Username")
 	password := r.PostForm.Get("Password")
 
-	redirect, res, err := createAccount(username, password)
-	if redirect != nil {
-		http.Redirect(w, r, *redirect, http.StatusFound)
+	signUpSuccess, page, err := createAccount(username, password)
+	if len(signUpSuccess.SessionId) > 0 {
+		auth.WriteSessionCookie(w, signUpSuccess.SessionId)
+		http.Redirect(w, r, signUpSuccess.Redirect, http.StatusFound)
 	} else {
-		renderer.UsingTemplate(w, "signup.html").Render(res, err)
+		renderer.UsingTemplate(w, "signup.html").Render(page, err)
 	}
 }

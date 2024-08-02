@@ -99,3 +99,26 @@ func LoadUsernamePasswordCredential(username string) (model.UsernamePasswordCred
 	err = attributevalue.UnmarshalMap(item.Item, &credential)
 	return credential, err
 }
+
+func LoadUser(userId string) (model.User, error) {
+	client := clients.DynamoDb()
+	item, err := client.GetItem(context.Background(), &dynamodb.GetItemInput{
+		TableName: &userTableName,
+		Key: map[string]types.AttributeValue{
+			"UserId": &types.AttributeValueMemberS{
+				Value: userId,
+			},
+		},
+	})
+	if err != nil {
+		return model.User{}, err
+	}
+
+	if len(item.Item) == 0 {
+		return model.User{}, nil
+	}
+
+	credential := model.User{}
+	err = attributevalue.UnmarshalMap(item.Item, &credential)
+	return credential, err
+}

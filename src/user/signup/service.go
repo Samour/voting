@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 	"github.com/Samour/voting/user/model"
 	"github.com/Samour/voting/user/repository"
@@ -12,10 +13,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func createAccount(username string, password string) (*string, render.HttpResponse, error) {
+type signUpResult struct {
+	SessionId string
+	Redirect  string
+}
+
+func createAccount(username string, password string) (signUpResult, render.HttpResponse, error) {
 	validation := validateUsernamePassword(username, password)
 	if len(validation) > 0 {
-		return nil, render.HttpResponse{
+		return signUpResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
 			Model: SignUpModel{
 				Username:         username,
@@ -26,7 +32,7 @@ func createAccount(username string, password string) (*string, render.HttpRespon
 
 	passwordHashBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		return nil, render.HttpResponse{}, err
+		return signUpResult{}, render.HttpResponse{}, err
 	}
 	user := model.User{
 		UserId:      utils.IdGen(),
@@ -41,7 +47,7 @@ func createAccount(username string, password string) (*string, render.HttpRespon
 	err = repository.InsertNewUser(user, credentials)
 	if err != nil {
 		if errors.Is(err, repository.UsernameUnavailableError{}) {
-			return nil, render.HttpResponse{
+			return signUpResult{}, render.HttpResponse{
 				HttpCode: http.StatusBadRequest,
 				Model: SignUpModel{
 					ErrorMessage: "This username is not available",
@@ -49,11 +55,19 @@ func createAccount(username string, password string) (*string, render.HttpRespon
 				},
 			}, nil
 		}
-		return nil, render.HttpResponse{}, err
+		return signUpResult{}, render.HttpResponse{}, err
 	}
 
-	redirect := "/"
-	return &redirect, render.HttpResponse{}, nil
+	session := auth.CreateUserSession(auth.SessionUserDetails{
+		UserId:      user.UserId,
+		DisplayName: user.DisplayName,
+		Username:    credentials.Username,
+	})
+
+	return signUpResult{
+		SessionId: session.SessionId,
+		Redirect:  "/",
+	}, render.HttpResponse{}, nil
 }
 
 func validateUsernamePassword(username string, password string) []string {
