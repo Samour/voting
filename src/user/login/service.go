@@ -26,7 +26,7 @@ func logIn(username string, password string) (logInResult, render.HttpResponse, 
 	if len(credential.UserId) == 0 || !passwordValid {
 		return logInResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
-			Model: LogInModel{
+			Model: logInModel{
 				ErrorMessage: "Username or password is incorrect",
 				Username:     username,
 			},

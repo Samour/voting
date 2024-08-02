@@ -23,7 +23,7 @@ func createAccount(username string, password string) (signUpResult, render.HttpR
 	if len(validation) > 0 {
 		return signUpResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
-			Model: SignUpModel{
+			Model: signUpModel{
 				Username:         username,
 				ValidationErrors: validation,
 			},
@@ -49,7 +49,7 @@ func createAccount(username string, password string) (signUpResult, render.HttpR
 		if errors.Is(err, repository.UsernameUnavailableError{}) {
 			return signUpResult{}, render.HttpResponse{
 				HttpCode: http.StatusBadRequest,
-				Model: SignUpModel{
+				Model: signUpModel{
 					ErrorMessage: "This username is not available",
 					Username:     username,
 				},

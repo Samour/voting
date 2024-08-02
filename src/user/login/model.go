@@ -1,6 +1,6 @@
 package login
 
-type LogInModel struct {
+type logInModel struct {
 	ErrorMessage string
 	Username     string
 }
