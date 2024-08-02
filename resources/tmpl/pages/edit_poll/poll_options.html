@@ -5,11 +5,10 @@
     <label for="option-{{ $index }}">{{ $index }}.</label>
   </div>
   <div class="ten columns">
-    <input id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
+    <input type="text" id="option-{{ $index }}" name="Options[]" class="u-full-width" value="{{ . }}" />
   </div>
   <div class="one column">
-    <button hx-patch="/polls/options/" hx-target="#poll-options" name="Remove"
-      value="{{ $i }}">X</button>
+    <button hx-patch="/polls/options/" hx-target="#poll-options" name="Remove" value="{{ $i }}">X</button>
   </div>
 </div>
 {{ end }}
