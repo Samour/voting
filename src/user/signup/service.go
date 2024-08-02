@@ -9,6 +9,7 @@ import (
 	"github.com/Samour/voting/user/model"
 	"github.com/Samour/voting/user/repository"
 	"github.com/Samour/voting/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func createAccount(username string, password string) (*string, render.HttpResponse, error) {
@@ -23,17 +24,21 @@ func createAccount(username string, password string) (*string, render.HttpRespon
 		}, nil
 	}
 
+	passwordHashBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return nil, render.HttpResponse{}, err
+	}
 	user := model.User{
 		UserId:      utils.IdGen(),
 		DisplayName: username,
 	}
 	credentials := model.UsernamePasswordCredential{
 		Username:     strings.ToLower(username),
-		PasswordHash: password,
+		PasswordHash: string(passwordHashBytes),
 		UserId:       user.UserId,
 	}
 
-	err := repository.InsertNewUser(user, credentials)
+	err = repository.InsertNewUser(user, credentials)
 	if err != nil {
 		if errors.Is(err, repository.UsernameUnavailableError{}) {
 			return nil, render.HttpResponse{
