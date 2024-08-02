@@ -30,3 +30,16 @@ func CreateUserSession(userDetails SessionUserDetails) Session {
 
 	return session
 }
+
+func RetrieveSession(sessionId string) (Session, bool) {
+	item, exists := sessionStore.Load(sessionId)
+	if !exists {
+		return Session{}, false
+	}
+
+	if session, ok := item.(Session); ok {
+		return session, true
+	} else {
+		return Session{}, false
+	}
+}

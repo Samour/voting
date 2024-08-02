@@ -1,13 +1,16 @@
 package home
 
-import "net/http"
+import (
+	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/types"
+)
 
 type HomeControllers struct {
-	ServeHome func(http.ResponseWriter, *http.Request)
+	ServeHome types.Controller
 }
 
 func CreateHomeControllers() HomeControllers {
 	return HomeControllers{
-		ServeHome: ServeHome,
+		ServeHome: auth.RedirectUnauthenticated(ServeHome),
 	}
 }

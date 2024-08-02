@@ -1,26 +1,26 @@
 package user
 
 import (
-	"net/http"
-
+	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/types"
 	"github.com/Samour/voting/user/login"
 	"github.com/Samour/voting/user/signup"
 )
 
 type UserControllers struct {
-	ServeSignUp  func(http.ResponseWriter, *http.Request)
-	HandleSignUp func(http.ResponseWriter, *http.Request)
+	ServeSignUp  types.Controller
+	HandleSignUp types.Controller
 
-	ServeLogIn  func(http.ResponseWriter, *http.Request)
-	HandleLogIn func(http.ResponseWriter, *http.Request)
+	ServeLogIn  types.Controller
+	HandleLogIn types.Controller
 }
 
 func CreateUserControllers() UserControllers {
 	return UserControllers{
-		ServeSignUp:  signup.ServeSignUp,
+		ServeSignUp:  auth.RedirectAuthenticated(signup.ServeSignUp),
 		HandleSignUp: signup.HandleSignUp,
 
-		ServeLogIn:  login.ServeLogIn,
+		ServeLogIn:  auth.RedirectAuthenticated(login.ServeLogIn),
 		HandleLogIn: login.HandleLogIn,
 	}
 }

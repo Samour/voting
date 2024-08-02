@@ -1,40 +1,40 @@
 package polls
 
 import (
-	"net/http"
-
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/polls/castvote"
 	"github.com/Samour/voting/polls/createpoll"
 	"github.com/Samour/voting/polls/editpoll"
 	"github.com/Samour/voting/polls/viewpoll"
+	"github.com/Samour/voting/types"
 )
 
 type PollControllers struct {
-	ServeViewPoll          func(http.ResponseWriter, *http.Request)
-	HandlePollStatusChange func(http.ResponseWriter, *http.Request)
+	ServeViewPoll          types.Controller
+	HandlePollStatusChange types.Controller
 
-	ServeNewPoll func(http.ResponseWriter, *http.Request)
+	ServeNewPoll types.Controller
 
-	ServeEditPoll   func(http.ResponseWriter, *http.Request)
-	ServeSavePoll   func(http.ResponseWriter, *http.Request)
-	HandlePatchPoll func(http.ResponseWriter, *http.Request)
+	ServeEditPoll   types.Controller
+	ServeSavePoll   types.Controller
+	HandlePatchPoll types.Controller
 
-	ServeVotePoll              func(http.ResponseWriter, *http.Request)
-	HandleCastFptpVote         func(http.ResponseWriter, *http.Request)
-	HandlePatchRankedChoice    func(http.ResponseWriter, *http.Request)
-	HandleCastRankedChoiceVote func(http.ResponseWriter, *http.Request)
+	ServeVotePoll              types.Controller
+	HandleCastFptpVote         types.Controller
+	HandlePatchRankedChoice    types.Controller
+	HandleCastRankedChoiceVote types.Controller
 }
 
 func CreatePollControllers() PollControllers {
 	return PollControllers{
-		ServeViewPoll:          viewpoll.ServeViewPoll,
-		HandlePollStatusChange: viewpoll.HandlePollStatusChange,
+		ServeViewPoll:          auth.RedirectUnauthenticated(viewpoll.ServeViewPoll),
+		HandlePollStatusChange: auth.PreventUnauthenticated(viewpoll.HandlePollStatusChange),
 
-		ServeNewPoll: createpoll.ServeNewPoll,
+		ServeNewPoll: auth.RedirectUnauthenticated(createpoll.ServeNewPoll),
 
-		ServeEditPoll:   editpoll.ServeEditPoll,
-		ServeSavePoll:   editpoll.ServeSavePoll,
-		HandlePatchPoll: editpoll.HandlePatchPoll,
+		ServeEditPoll:   auth.RedirectUnauthenticated(editpoll.ServeEditPoll),
+		ServeSavePoll:   auth.PreventUnauthenticated(editpoll.ServeSavePoll),
+		HandlePatchPoll: auth.PreventUnauthenticated(editpoll.HandlePatchPoll),
 
 		ServeVotePoll:              castvote.ServeVotePoll,
 		HandleCastFptpVote:         castvote.HandleCastFptpVote,
