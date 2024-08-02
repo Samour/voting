@@ -1,7 +1,11 @@
 package home
 
-import "github.com/Samour/voting/polls/model"
+import (
+	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/site"
+)
 
 type homeModel struct {
-	Polls []model.Poll
+	SiteModel site.SiteModel
+	Polls     []model.Poll
 }

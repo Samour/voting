@@ -1,4 +1,4 @@
-{{ template "page_header.html" }}
+{{ template "page_header.html" .SiteModel }}
 <h1>Polls</h1>
 <ul>
   {{ range .Polls }}
@@ -10,4 +10,4 @@
 <div>
   <a href="/polls/new">Create poll</a>
 </div>
-{{ template "page_footer.html" }}
+{{ template "page_footer.html" .SiteModel }}

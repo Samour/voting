@@ -1,4 +1,4 @@
-{{ template "page_header.html" }}
+{{ template "page_header.html" .SiteModel }}
 <h1>Edit Poll</h1>
 {{ if .MayEdit }}
 <div>
@@ -46,4 +46,4 @@
   </div>
 </div>
 {{ end }}
-{{ template "page_footer.html" }}
+{{ template "page_footer.html" .SiteModel }}

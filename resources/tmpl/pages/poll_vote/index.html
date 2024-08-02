@@ -1,4 +1,4 @@
-{{ template "page_header.html" }}
+{{ template "page_header.html" .SiteModel }}
 {{ if .MayVote }}
 <h1>{{ .PollName }}</h1>
 <form hx-post="/polls/{{ .PollId }}/vote/{{ .PollAggregationType }}/">
@@ -13,4 +13,4 @@
   </div>
 </div>
 {{ end }}
-{{ template "page_footer.html" }}
+{{ template "page_footer.html" .SiteModel }}

@@ -24,4 +24,11 @@
 
 <body>
 
+  {{ if .User.Authenticated }}
+  <div class="topbar">
+    <a class="button" href="/logout">Log Out</a>
+    <div>{{ .User.DisplayName }}</div>
+  </div>
+  {{ end }}
+
   <div class="container">
