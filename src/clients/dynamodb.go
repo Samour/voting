@@ -26,7 +26,11 @@ func (c staticCredentials) Retrieve(ctx context.Context) (aws.Credentials, error
 }
 
 func WarmDynamoDbClient() {
-	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(staticCredentials{}))
+	cfg, err := config.LoadDefaultConfig(context.Background(), func(lo *config.LoadOptions) error {
+		lo.Credentials = staticCredentials{}
+		lo.Region = "local"
+		return nil
+	})
 	if err != nil {
 		panic(err)
 	}
