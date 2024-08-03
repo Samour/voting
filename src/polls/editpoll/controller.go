@@ -14,7 +14,7 @@ var viewPollRenderer = render.Must(render.CreateRenderer("pages/view_poll/*.html
 func ServeEditPoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	pollId := r.PathValue("id")
 
-	renderer.UsingTemplate(w, "index.html").Render(getPoll(pollId))
+	renderer.UsingTemplate(w, "index.html").Render(getPoll(s, pollId))
 }
 
 func ServeSavePoll(w http.ResponseWriter, r *http.Request, s auth.Session) {

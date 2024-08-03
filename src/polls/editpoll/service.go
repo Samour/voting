@@ -10,7 +10,7 @@ import (
 	"github.com/Samour/voting/render"
 )
 
-func getPoll(id string) (render.HttpResponse, error) {
+func getPoll(s auth.Session, id string) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -24,7 +24,7 @@ func getPoll(id string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: buildEditPollModel(poll),
+		Model: buildEditPollModel(s, poll),
 	}, nil
 }
 
@@ -58,7 +58,8 @@ func updatePollDetails(s auth.Session, id string, d pollDetails) (render.HttpRes
 
 	return render.HttpResponse{
 		Model: viewpoll.BuildViewPollModel(s, viewpoll.ViewPollData{
-			Poll: poll,
+			Poll:           poll,
+			RenderFullPage: true,
 		}),
 	}, nil
 }

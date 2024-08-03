@@ -1,10 +1,13 @@
 package editpoll
 
+import "github.com/Samour/voting/site"
+
 type editPollModel struct {
 	PollId              string
 	PollName            string
 	PollAggregationType string
 	MayEdit             bool
+	SiteModel           site.SiteModel
 	OptionsModel        editPollOptionsModel
 }
 
