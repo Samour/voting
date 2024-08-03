@@ -18,15 +18,12 @@ type signUpResult struct {
 	Redirect  string
 }
 
-func createAccount(username string, password string) (signUpResult, render.HttpResponse, error) {
+func createAccount(username string, password string, redirect string) (signUpResult, render.HttpResponse, error) {
 	validation := validateUsernamePassword(username, password)
 	if len(validation) > 0 {
 		return signUpResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
-			Model: signUpModel{
-				Username:         username,
-				ValidationErrors: validation,
-			},
+			Model:    buildSignUpModel(username, redirect, "", validation),
 		}, nil
 	}
 
@@ -49,10 +46,7 @@ func createAccount(username string, password string) (signUpResult, render.HttpR
 		if errors.Is(err, repository.UsernameUnavailableError{}) {
 			return signUpResult{}, render.HttpResponse{
 				HttpCode: http.StatusBadRequest,
-				Model: signUpModel{
-					ErrorMessage: "This username is not available",
-					Username:     username,
-				},
+				Model:    buildSignUpModel(username, redirect, "This username is not available", []string{}),
 			}, nil
 		}
 		return signUpResult{}, render.HttpResponse{}, err
@@ -64,9 +58,12 @@ func createAccount(username string, password string) (signUpResult, render.HttpR
 		Username:    credentials.Username,
 	})
 
+	if len(redirect) == 0 {
+		redirect = "/"
+	}
 	return signUpResult{
 		SessionId: session.SessionId,
-		Redirect:  "/",
+		Redirect:  redirect,
 	}, render.HttpResponse{}, nil
 }
 

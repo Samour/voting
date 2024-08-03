@@ -1,7 +1,8 @@
 package signup
 
 type signUpModel struct {
-	ErrorMessage     string
 	Username         string
+	ErrorMessage     string
 	ValidationErrors []string
+	LogInUrl         string
 }

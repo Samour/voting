@@ -19,9 +19,7 @@ func logIn(username string, password string, redirect string) (logInResult, rend
 	if len(username) == 0 {
 		return logInResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
-			Model: logInModel{
-				ErrorMessage: "Must provide a username",
-			},
+			Model:    buildLogInModel(username, redirect, "Must provide a username"),
 		}, nil
 	}
 
@@ -35,10 +33,7 @@ func logIn(username string, password string, redirect string) (logInResult, rend
 	if len(credential.UserId) == 0 || !passwordValid {
 		return logInResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
-			Model: logInModel{
-				ErrorMessage: "Username or password is incorrect",
-				Username:     username,
-			},
+			Model:    buildLogInModel(username, redirect, "Username or password is incorrect"),
 		}, nil
 	}
 

@@ -10,9 +10,10 @@ import (
 	"github.com/Samour/voting/types"
 )
 
+const ParamRedirect = "redirect"
+
 const redirectAuthenticatedTarget = "/"
 const redirectUnauthenticatedTarget = "/login"
-const redirectParam = "redirect"
 
 func Unauthenticated(c types.Controller) types.Controller {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +41,7 @@ func AuthenticatedWithRedirect(c types.AuthenticatedController) types.Controller
 		}
 
 		if len(session.User.UserId) == 0 {
-			redirect := fmt.Sprintf("%s?%s=%s", redirectUnauthenticatedTarget, redirectParam, url.QueryEscape(r.URL.Path))
+			redirect := fmt.Sprintf("%s?%s=%s", redirectUnauthenticatedTarget, ParamRedirect, url.QueryEscape(r.URL.Path))
 			http.Redirect(w, r, redirect, http.StatusFound)
 			return
 		}
@@ -64,8 +65,4 @@ func AuthenticatedWithError(c types.AuthenticatedController) types.Controller {
 
 		c(w, r, session)
 	}
-}
-
-func GetAuthRedirect(r *http.Request) string {
-	return r.Form.Get(redirectParam)
 }

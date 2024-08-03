@@ -11,7 +11,17 @@ import (
 var renderer = render.Must(render.CreateRenderer("pages/login.html"))
 
 func ServeLogIn(w http.ResponseWriter, r *http.Request) {
-	renderer.UsingTemplate(w, "login.html").Render(render.HttpResponse{}, nil)
+	err := r.ParseForm()
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	redirect := r.Form.Get(middleware.ParamRedirect)
+
+	renderer.UsingTemplate(w, "login.html").Render(render.HttpResponse{
+		Model: buildLogInModel("", redirect, ""),
+	}, nil)
 }
 
 func HandleLogIn(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +33,7 @@ func HandleLogIn(w http.ResponseWriter, r *http.Request) {
 
 	username := r.PostForm.Get("Username")
 	password := r.PostForm.Get("Password")
-	redirect := middleware.GetAuthRedirect(r)
+	redirect := r.Form.Get(middleware.ParamRedirect)
 
 	loginSuccess, page, err := logIn(username, password, redirect)
 	if len(loginSuccess.SessionId) > 0 {
