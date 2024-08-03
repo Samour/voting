@@ -21,6 +21,7 @@ type castVoteModel struct {
 
 type voteFormModel struct {
 	Voted                 int
+	Authenticated         bool
 	FptpVoteModel         *fptpVoteModel
 	RankedChoiceVoteModel *rankedChoiceVoteModel
 }

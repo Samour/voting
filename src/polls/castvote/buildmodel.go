@@ -20,11 +20,11 @@ func buildCastVoteModel(s auth.Session, d castVoteData) castVoteModel {
 		PollName:            d.Poll.Name,
 		PollAggregationType: d.Poll.AggregationType,
 		SiteModel:           site.BuildSiteModel(s),
-		VoteFormModel:       buildVoteFormModel(d),
+		VoteFormModel:       buildVoteFormModel(s, d),
 	}
 }
 
-func buildVoteFormModel(d castVoteData) voteFormModel {
+func buildVoteFormModel(s auth.Session, d castVoteData) voteFormModel {
 	var fptpModel *fptpVoteModel
 	var rcvModel *rankedChoiceVoteModel
 
@@ -38,6 +38,7 @@ func buildVoteFormModel(d castVoteData) voteFormModel {
 
 	return voteFormModel{
 		Voted:                 d.Voted,
+		Authenticated:         len(s.User.UserId) > 0,
 		FptpVoteModel:         fptpModel,
 		RankedChoiceVoteModel: rcvModel,
 	}

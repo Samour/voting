@@ -32,7 +32,7 @@ func getPollVoteForm(s auth.Session, pollId string) (render.HttpResponse, error)
 	}, nil
 }
 
-func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
+func castFptpVote(s auth.Session, pollId string, option int) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -60,7 +60,7 @@ func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
 
 	if option < 0 || option >= len(poll.Options) {
 		return render.HttpResponse{
-			Model: buildVoteFormModel(castVoteData{
+			Model: buildVoteFormModel(s, castVoteData{
 				Poll:         poll,
 				Voted:        -1,
 				ErrorMessage: "You must select an option to vote for",
@@ -83,7 +83,7 @@ func castFptpVote(pollId string, option int) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: buildVoteFormModel(castVoteData{
+		Model: buildVoteFormModel(s, castVoteData{
 			Poll:  poll,
 			Voted: option,
 		}),
@@ -124,7 +124,7 @@ func removeFromList(l []int, v int) []int {
 	return r
 }
 
-func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, error) {
+func castRankedChoiceVote(s auth.Session, pollId string, ranked []int) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -152,7 +152,7 @@ func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, err
 
 	if len(ranked) < len(poll.Options) {
 		return render.HttpResponse{
-			Model: buildVoteFormModel(castVoteData{
+			Model: buildVoteFormModel(s, castVoteData{
 				Poll:         poll,
 				Voted:        -1,
 				Ranked:       ranked,
@@ -175,7 +175,7 @@ func castRankedChoiceVote(pollId string, ranked []int) (render.HttpResponse, err
 	}
 
 	return render.HttpResponse{
-		Model: buildVoteFormModel(castVoteData{
+		Model: buildVoteFormModel(s, castVoteData{
 			Poll:   poll,
 			Voted:  1,
 			Ranked: ranked,

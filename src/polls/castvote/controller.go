@@ -30,8 +30,14 @@ func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {
+	session, err := auth.GetSession(r)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	pollId := r.PathValue("id")
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
@@ -43,7 +49,7 @@ func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {
 		option = -1
 	}
 
-	renderer.UsingTemplate(w, "vote_form.html").Render(castFptpVote(pollId, option))
+	renderer.UsingTemplate(w, "vote_form.html").Render(castFptpVote(session, pollId, option))
 }
 
 func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
@@ -86,9 +92,15 @@ func HandlePatchRankedChoice(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
+	session, err := auth.GetSession(r)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	pollId := r.PathValue("id")
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
@@ -100,7 +112,7 @@ func HandleCastRankedChoiceVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderer.UsingTemplate(w, "vote_form.html").Render(castRankedChoiceVote(pollId, ranked))
+	renderer.UsingTemplate(w, "vote_form.html").Render(castRankedChoiceVote(session, pollId, ranked))
 }
 
 func extractSelectedArray(v url.Values) ([]int, error) {

@@ -7,5 +7,7 @@
   {{ if eq .Voted -1 }}
   <button action="submit">Cast vote</button>
   {{ end }}
+  {{ if .Authenticated }}
   <a href="/" class="u-pull-right">Home</a>
+  {{ end }}
 </div>
