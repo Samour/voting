@@ -16,6 +16,15 @@ type logInResult struct {
 }
 
 func logIn(username string, password string) (logInResult, render.HttpResponse, error) {
+	if len(username) == 0 {
+		return logInResult{}, render.HttpResponse{
+			HttpCode: http.StatusBadRequest,
+			Model: logInModel{
+				ErrorMessage: "Must provide a username",
+			},
+		}, nil
+	}
+
 	credential, err := repository.LoadUsernamePasswordCredential(strings.ToLower(username))
 	if err != nil {
 		return logInResult{}, render.HttpResponse{}, err
