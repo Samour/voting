@@ -3,33 +3,43 @@ package viewpoll
 import (
 	"fmt"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/site"
 )
 
-func BuildViewPollModel(p model.Poll, fptp *model.FptpPollResult, rcv *model.RankedChoicePollResult, renderFullPage bool) model.ViewPollModel {
-	statusLabel := p.Status
+type ViewPollData struct {
+	Poll           model.Poll
+	FptpResult     *model.FptpPollResult
+	RcvResult      *model.RankedChoicePollResult
+	RenderFullPage bool
+}
+
+func BuildViewPollModel(s auth.Session, d ViewPollData) model.ViewPollModel {
+	statusLabel := d.Poll.Status
 	pollForUpdate := false
-	if p.Status == model.PollStatusClosed && fptp == nil && rcv == nil {
+	if d.Poll.Status == model.PollStatusClosed && d.FptpResult == nil && d.RcvResult == nil {
 		statusLabel = "closed; vote count pending"
 		pollForUpdate = true
 	}
 
 	aggregationTypeLabel := ""
-	if p.AggregationType == model.PollAggregationTypeFirstPastThePost {
+	if d.Poll.AggregationType == model.PollAggregationTypeFirstPastThePost {
 		aggregationTypeLabel = "First past the post"
-	} else if p.AggregationType == model.PollAggregationTypeRankedChoice {
+	} else if d.Poll.AggregationType == model.PollAggregationTypeRankedChoice {
 		aggregationTypeLabel = "Ranked choice"
 	}
 
 	return model.ViewPollModel{
-		RenderFullPage:       renderFullPage,
+		RenderFullPage:       d.RenderFullPage,
 		PollForUpdate:        pollForUpdate,
-		PollId:               p.PollId,
-		PollName:             p.Name,
+		PollId:               d.Poll.PollId,
+		PollName:             d.Poll.Name,
 		StatusLabel:          statusLabel,
 		AggregationTypeLabel: aggregationTypeLabel,
-		OptionsModel:         buildViewPollOptionsModel(p, fptp, rcv),
-		NavigationModel:      buildViewPollNavigationModel(p),
+		SiteModel:            site.BuildSiteModel(s),
+		OptionsModel:         buildViewPollOptionsModel(d.Poll, d.FptpResult, d.RcvResult),
+		NavigationModel:      buildViewPollNavigationModel(d.Poll),
 	}
 }
 

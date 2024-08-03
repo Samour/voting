@@ -30,7 +30,7 @@ func ServeSavePoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	options := r.PostForm["Options[]"]
 
 	viewPollRenderer.UsingTemplate(w, "index.html").Render(
-		updatePollDetails(pollId, pollDetails{
+		updatePollDetails(s, pollId, pollDetails{
 			Name:            name,
 			AggregationType: aggregationType,
 			Options:         options,

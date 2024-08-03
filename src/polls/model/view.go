@@ -1,5 +1,7 @@
 package model
 
+import "github.com/Samour/voting/site"
+
 type ViewPollModel struct {
 	// HTML fragment behaviours
 	RenderFullPage bool
@@ -10,6 +12,7 @@ type ViewPollModel struct {
 	StatusLabel          string
 	AggregationTypeLabel string
 	// Components
+	SiteModel       site.SiteModel
 	OptionsModel    ViewPollOptionsModel
 	NavigationModel ViewPollNavigationModel
 }

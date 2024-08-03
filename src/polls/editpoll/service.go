@@ -3,6 +3,7 @@ package editpoll
 import (
 	"net/http"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/polls/viewpoll"
@@ -27,7 +28,7 @@ func getPoll(id string) (render.HttpResponse, error) {
 	}, nil
 }
 
-func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
+func updatePollDetails(s auth.Session, id string, d pollDetails) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -56,7 +57,9 @@ func updatePollDetails(id string, d pollDetails) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: viewpoll.BuildViewPollModel(poll, nil, nil, true),
+		Model: viewpoll.BuildViewPollModel(s, viewpoll.ViewPollData{
+			Poll: poll,
+		}),
 	}, nil
 }
 

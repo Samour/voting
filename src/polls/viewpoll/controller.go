@@ -14,7 +14,7 @@ func ServeViewPoll(w http.ResponseWriter, r *http.Request, s auth.Session) {
 	pollId := r.PathValue("id")
 	isHxRequest := strings.ToLower(r.Header.Get("HX-Request")) == "true"
 
-	renderer.UsingTemplate(w, "index.html").Render(getPoll(pollId, !isHxRequest))
+	renderer.UsingTemplate(w, "index.html").Render(getPoll(s, pollId, !isHxRequest))
 }
 
 func HandlePollStatusChange(w http.ResponseWriter, r *http.Request, s auth.Session) {
@@ -27,5 +27,5 @@ func HandlePollStatusChange(w http.ResponseWriter, r *http.Request, s auth.Sessi
 
 	status := r.PostForm.Get("Status")
 
-	renderer.UsingTemplate(w, "index.html").Render(updateStatus(pollId, status))
+	renderer.UsingTemplate(w, "index.html").Render(updateStatus(s, pollId, status))
 }

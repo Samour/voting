@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/polls/countvotes"
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/render"
 )
 
-func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
+func getPoll(s auth.Session, id string, renderFullPage bool) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -41,7 +42,12 @@ func getPoll(id string, renderFullPage bool) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: BuildViewPollModel(poll, fptpResult, rankedChoiceResult, renderFullPage),
+		Model: BuildViewPollModel(s, ViewPollData{
+			Poll:           poll,
+			FptpResult:     fptpResult,
+			RcvResult:      rankedChoiceResult,
+			RenderFullPage: renderFullPage,
+		}),
 	}, nil
 }
 
@@ -71,7 +77,7 @@ func loadRankedChoiceResult(pollId string) (*model.RankedChoicePollResult, error
 	return result, nil
 }
 
-func updateStatus(id string, status string) (render.HttpResponse, error) {
+func updateStatus(s auth.Session, id string, status string) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(id, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -117,6 +123,8 @@ func updateStatus(id string, status string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: BuildViewPollModel(poll, nil, nil, false),
+		Model: BuildViewPollModel(s, ViewPollData{
+			Poll: poll,
+		}),
 	}, nil
 }
