@@ -6,20 +6,27 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/render"
 )
 
 var renderer = render.Must(render.CreateRenderer("pages/poll_vote/*.html"))
 
 func ServeVotePoll(w http.ResponseWriter, r *http.Request) {
+	session, err := auth.GetSession(r)
+	if err != nil {
+		render.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	pollId := r.PathValue("id")
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		render.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	renderer.UsingTemplate(w, "index.html").Render(getPollVoteForm(pollId))
+	renderer.UsingTemplate(w, "index.html").Render(getPollVoteForm(session, pollId))
 }
 
 func HandleCastFptpVote(w http.ResponseWriter, r *http.Request) {

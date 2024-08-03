@@ -1,6 +1,10 @@
 package castvote
 
-import "github.com/Samour/voting/polls/model"
+import (
+	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/polls/model"
+	"github.com/Samour/voting/site"
+)
 
 type castVoteData struct {
 	Poll         model.Poll
@@ -9,12 +13,13 @@ type castVoteData struct {
 	ErrorMessage string
 }
 
-func buildCastVoteModel(d castVoteData) castVoteModel {
+func buildCastVoteModel(s auth.Session, d castVoteData) castVoteModel {
 	return castVoteModel{
 		MayVote:             d.Poll.Status == model.PollStatusVoting,
 		PollId:              d.Poll.PollId,
 		PollName:            d.Poll.Name,
 		PollAggregationType: d.Poll.AggregationType,
+		SiteModel:           site.BuildSiteModel(s),
 		VoteFormModel:       buildVoteFormModel(d),
 	}
 }

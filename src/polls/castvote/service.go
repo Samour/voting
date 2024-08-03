@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Samour/voting/auth"
 	"github.com/Samour/voting/polls/model"
 	"github.com/Samour/voting/polls/repository"
 	"github.com/Samour/voting/render"
 	"github.com/Samour/voting/utils"
 )
 
-func getPollVoteForm(pollId string) (render.HttpResponse, error) {
+func getPollVoteForm(s auth.Session, pollId string) (render.HttpResponse, error) {
 	poll := model.Poll{}
 	err := repository.GetPollItem(pollId, model.DiscriminatorPoll, &poll)
 	if err != nil {
@@ -24,7 +25,7 @@ func getPollVoteForm(pollId string) (render.HttpResponse, error) {
 	}
 
 	return render.HttpResponse{
-		Model: buildCastVoteModel(castVoteData{
+		Model: buildCastVoteModel(s, castVoteData{
 			Poll:  poll,
 			Voted: -1,
 		}),

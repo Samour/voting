@@ -1,5 +1,7 @@
 package castvote
 
+import "github.com/Samour/voting/site"
+
 type rankedChoiceUpdate struct {
 	Select   int
 	Unselect int
@@ -13,6 +15,7 @@ type castVoteModel struct {
 	PollName            string
 	PollAggregationType string
 	// Components
+	SiteModel     site.SiteModel
 	VoteFormModel voteFormModel
 }
 
