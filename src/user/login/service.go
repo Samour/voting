@@ -15,7 +15,7 @@ type logInResult struct {
 	Redirect  string
 }
 
-func logIn(username string, password string) (logInResult, render.HttpResponse, error) {
+func logIn(username string, password string, redirect string) (logInResult, render.HttpResponse, error) {
 	if len(username) == 0 {
 		return logInResult{}, render.HttpResponse{
 			HttpCode: http.StatusBadRequest,
@@ -53,9 +53,12 @@ func logIn(username string, password string) (logInResult, render.HttpResponse, 
 		Username:    credential.Username,
 	})
 
+	if len(redirect) == 0 {
+		redirect = "/"
+	}
 	return logInResult{
 		SessionId: session.SessionId,
-		Redirect:  "/",
+		Redirect:  redirect,
 	}, render.HttpResponse{}, nil
 }
 

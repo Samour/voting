@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Samour/voting/auth"
+	"github.com/Samour/voting/middleware"
 	"github.com/Samour/voting/render"
 )
 
@@ -22,8 +23,9 @@ func HandleLogIn(w http.ResponseWriter, r *http.Request) {
 
 	username := r.PostForm.Get("Username")
 	password := r.PostForm.Get("Password")
+	redirect := middleware.GetAuthRedirect(r)
 
-	loginSuccess, page, err := logIn(username, password)
+	loginSuccess, page, err := logIn(username, password, redirect)
 	if len(loginSuccess.SessionId) > 0 {
 		auth.WriteSessionCookie(w, loginSuccess.SessionId)
 		http.Redirect(w, r, loginSuccess.Redirect, http.StatusFound)
