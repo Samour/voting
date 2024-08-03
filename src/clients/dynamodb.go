@@ -14,8 +14,19 @@ func DynamoDb() *dynamodb.Client {
 	return dynamodbClient
 }
 
+type staticCredentials struct{}
+
+func (c staticCredentials) Retrieve(ctx context.Context) (aws.Credentials, error) {
+	return aws.Credentials{
+		AccessKeyID:     "dummy",
+		SecretAccessKey: "dummy",
+		SessionToken:    "dummy",
+		Source:          "static",
+	}, nil
+}
+
 func WarmDynamoDbClient() {
-	cfg, err := config.LoadDefaultConfig(context.Background())
+	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(staticCredentials{}))
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,8 @@ create_table() {
   ATTRIBUTE_DEFINITIONS=$(jq '.AttributeDefinitions' "$FILE_NAME")
   KEY_SCHEMA=$(jq '.KeySchema' "$FILE_NAME")
 
-  aws --endpoint-url "$ENDPOINT" dynamodb create-table \
+  AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy AWS_DEFAULT_REGION=local aws --endpoint-url "$ENDPOINT" \
+    dynamodb create-table \
     --table-name "$TABLE_NAME" \
     --attribute-definitions "$ATTRIBUTE_DEFINITIONS" \
     --key-schema "$KEY_SCHEMA" \
